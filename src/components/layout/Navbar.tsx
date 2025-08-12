@@ -66,8 +66,8 @@ export default function Navbar() {
                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
                   {navigationLinks.map((link, index) => (
                     <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink href={link.href} className="py-1.5">
-                        {link.label}
+                      <NavigationMenuLink asChild className="py-1.5">
+                        <Link to={link.href}>{link.label}</Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
