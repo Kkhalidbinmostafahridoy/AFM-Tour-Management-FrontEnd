@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Form,
   FormControl,
@@ -42,6 +42,7 @@ export function RegistrationFrom({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [register] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(registerSchema),
@@ -62,6 +63,7 @@ export function RegistrationFrom({
       const result = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User Created successful!");
+      navigate("/verify");
     } catch (error) {
       console.log(error);
     }
