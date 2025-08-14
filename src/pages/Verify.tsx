@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -28,7 +27,7 @@ import {
   useVerifyOtpMutation,
 } from "@/redux/features/Auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 import { toast, Toaster } from "sonner";
@@ -45,10 +44,9 @@ function Verify() {
   const navigate = useNavigate();
   const email = location?.state?.email || ""; //face this problem also use this way to get email from location state
   const [confermed, setConfirmed] = useState(false);
-
   const [sendOtp] = useSendOtpMutation();
-
   const [verifyOtp] = useVerifyOtpMutation();
+  const [timer, setTimer] = useState(10);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -57,14 +55,15 @@ function Verify() {
     },
   });
 
-  const handleConfirmed = async () => {
+  const handleSendOtp = async () => {
     const toastId = toast.loading("Sending OTP...");
+    setConfirmed(true);
+    setTimer(10);
     try {
       const res = await sendOtp({ email: email }).unwrap();
 
       if (res.success) {
         toast.success("OTP sent successfully!", { id: toastId });
-        setConfirmed(true);
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
@@ -86,6 +85,7 @@ function Verify() {
       const res = await verifyOtp(userInfo).unwrap();
       if (res.success) {
         toast.success("OTP verified successfully!", { id: toastId });
+        setConfirmed(true);
         navigate("/login");
       }
     } catch (error) {
@@ -96,10 +96,27 @@ function Verify() {
   };
 
   // Redirect if no email
-  // if (!email) {
-  //   navigate("/");
-  //   return null;
-  // }
+  useEffect(() => {
+    if (!email) {
+      navigate("/verify");
+    }
+  });
+
+  useEffect(() => {
+    if (!email || !confermed) {
+      console.log(
+        "Email or confirmation status is not set. Exiting timer setup."
+      );
+      return;
+    }
+    const timerId = setInterval(() => {
+      if (email && confermed) {
+        setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+        console.log("Timer:", timer);
+      }
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [email, confermed]);
 
   return (
     <div className="grid place-content-center h-screen  ">
@@ -145,7 +162,16 @@ function Verify() {
                         </InputOTP>
                       </FormControl>
                       <FormDescription>
-                        <Button variant="link">Recent OTP</Button>
+                        <Button
+                          onClick={handleSendOtp}
+                          type="button"
+                          variant="link"
+                          disabled={timer !== 0}
+                          className="p-0 text-sm"
+                        >
+                          Recent OTP:-
+                        </Button>{" "}
+                        {timer}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -169,7 +195,7 @@ function Verify() {
           </CardHeader>
           <CardFooter className="flex justify-end">
             <Button
-              onClick={handleConfirmed}
+              onClick={handleSendOtp}
               className="w-[300px]"
               form="otp-form"
               type="submit"
