@@ -1,6 +1,7 @@
 import { LoginForm } from "@/components/Modules/Authentications/LoginFrom";
 import TravelReg from "@/assets/images/download.jpg";
 import Logo from "@/assets/icons/Logo";
+import { Toaster } from "sonner";
 
 function Login() {
   return (
@@ -16,6 +17,7 @@ function Login() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
+            <Toaster />
             <LoginForm />
           </div>
         </div>

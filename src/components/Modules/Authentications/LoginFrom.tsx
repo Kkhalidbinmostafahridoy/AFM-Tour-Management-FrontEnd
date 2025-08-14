@@ -1,67 +1,112 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
+import { useLoginMutation } from "@/redux/features/Auth/auth.api";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<"form">) {
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const navigate = useNavigate();
+
+  // ✅ Add defaultValues to avoid uncontrolled inputs
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const [login] = useLoginMutation();
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    console.log("Form submitted", data);
+
+    try {
+      const result = await login(data).unwrap();
+      console.log("Login result", result);
+
+      // Redirect after successful login
+      toast.success("Login successful!");
+      navigate("/"); // Change to your actual dashboard route
+    } catch (error: any) {
+      console.log("Login error", error);
+
+      // Handle unverified account
+      if (error?.data?.message?.includes("not verified")) {
+        toast.error("Your account is not verified, please verify first.");
+        navigate("/verify", { state: data.email });
+        return;
+      }
+
+      // Invalid credentials
+      toast.error("Invalid email or password.");
+    }
+  };
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
-        <p className="text-muted-foreground text-sm text-balance">
-          Enter your email below to login to your account
+        <p className="text-muted-foreground text-sm">
+          Enter your email and password to login
         </p>
       </div>
-      <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
-        </div>
-        <div className="grid gap-3">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-          </div>
-          <Input id="password" type="password" required />
-          <a
-            href="#"
-            className="ml-auto text-sm underline-offset-4 hover:underline"
-          >
-            Forgot your password?
-          </a>
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
-          </span>
-        </div>
-        <Button variant="outline" className="w-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            className="mr-2 h-4 w-4"
-          >
-            <path
-              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385..."
-              fill="currentColor"
-            />
-          </svg>
-          Login with GitHub
-        </Button>
-      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="example@gmail.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="********" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full">
+            Login
+          </Button>
+        </form>
+      </Form>
+
       <div className="text-center text-sm">
-        Don&apos;t have an account?
-        <Link to="/register" className="underline underline-offset-4 mx-0.5">
-          sign up
+        Don&apos;t have an account?{" "}
+        <Link to="/register" className="underline underline-offset-4">
+          Sign up
         </Link>
       </div>
-    </form>
+    </div>
   );
 }
