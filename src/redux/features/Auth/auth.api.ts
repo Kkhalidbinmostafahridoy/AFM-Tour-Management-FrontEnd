@@ -23,7 +23,7 @@ const authApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
-    VerifyOtp: builder.mutation<IResponse<null>, IVerifyOtp>({
+    verifyOtp: builder.mutation<IResponse<null>, IVerifyOtp>({
       query: (userInfo) => ({
         url: "/otp/verify",
         method: "POST",

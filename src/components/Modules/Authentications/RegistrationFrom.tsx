@@ -41,7 +41,16 @@ export function RegistrationFrom({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [register] = useRegisterMutation();
+  // Define the expected shape of the register API response
+  type RegisterResponse = {
+    data?: {
+      email?: string;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  };
+
+  const [register] = useRegisterMutation<RegisterResponse>();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -58,12 +67,15 @@ export function RegistrationFrom({
       name: data.name,
       email: data.email,
       password: data.password,
+      confirmPassword: data.confirmPassword,
     };
     try {
       const result = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User Created successful!");
-      navigate("/verify");
+      if (result.data && result.data.email) {
+        navigate("/verify", { state: { email: result.data.email } });
+      } // Redirect to the verify page with email for send OTP
     } catch (error) {
       console.log(error);
     }

@@ -42,7 +42,7 @@ const FormSchema = z.object({
 function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [email] = useState(location.state || "");
+  const [email] = useState(location?.state.email || ""); //face this problem also use this way to get email from location state
   const [confermed, setConfirmed] = useState(false);
 
   const [sendOtp] = useSendOtpMutation();
@@ -85,6 +85,7 @@ function Verify() {
       const res = await verifyOtp(userInfo).unwrap();
       if (res.success) {
         toast.success("OTP verified successfully!", { id: toastId });
+        navigate("/login");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
@@ -94,10 +95,10 @@ function Verify() {
   };
 
   // Redirect if no email
-  // if (!email) {
-  //   navigate("/");
-  //   return null;
-  // }
+  if (!email) {
+    navigate("/");
+    return null;
+  }
 
   return (
     <div className="grid place-content-center h-screen  ">
