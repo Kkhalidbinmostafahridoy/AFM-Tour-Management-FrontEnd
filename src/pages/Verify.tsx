@@ -11,6 +11,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -42,7 +43,7 @@ const FormSchema = z.object({
 function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [email] = useState(location?.state.email || ""); //face this problem also use this way to get email from location state
+  const email = location?.state?.email || ""; //face this problem also use this way to get email from location state
   const [confermed, setConfirmed] = useState(false);
 
   const [sendOtp] = useSendOtpMutation();
@@ -95,10 +96,10 @@ function Verify() {
   };
 
   // Redirect if no email
-  if (!email) {
-    navigate("/");
-    return null;
-  }
+  // if (!email) {
+  //   navigate("/");
+  //   return null;
+  // }
 
   return (
     <div className="grid place-content-center h-screen  ">
@@ -143,6 +144,9 @@ function Verify() {
                           </InputOTPGroup>
                         </InputOTP>
                       </FormControl>
+                      <FormDescription>
+                        <Button variant="link">Recent OTP</Button>
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
