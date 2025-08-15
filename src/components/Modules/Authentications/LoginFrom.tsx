@@ -14,7 +14,6 @@ import {
 import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/Auth/auth.api";
 import { toast } from "sonner";
-import { baseApi } from "@/redux/features/baseApi"; // corrected path
 
 export function LoginForm({
   className,
@@ -37,7 +36,7 @@ export function LoginForm({
     console.log("Form submitted", data);
 
     try {
-      const result = await login(data).unwrap();
+      const result = await login(data as any).unwrap();
       console.log("Login result", result);
 
       // Redirect after successful login
@@ -110,6 +109,8 @@ export function LoginForm({
           or continue with
         </span>
       </div>
+
+      {/* for google authentication */}
       <Button
         onClick={() =>
           window.open(
