@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 import { toast, Toaster } from "sonner";
 import z from "zod";
+import OtpBgImage from "@/assets/images/verify backgroumd.jpg";
 
 const FormSchema = z.object({
   pin: z.string().length(6, {
@@ -122,7 +123,12 @@ function Verify() {
   }, [email, confermed]);
 
   return (
-    <div className="grid place-content-center h-screen  ">
+    <div
+      className="grid place-content-center h-screen "
+      style={{
+        backgroundImage: `url(${OtpBgImage}) `, // Replace with your path
+      }}
+    >
       <Toaster position="top-right" richColors />
       {confermed ? (
         <Card>

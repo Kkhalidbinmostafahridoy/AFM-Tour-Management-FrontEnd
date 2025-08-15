@@ -12,7 +12,7 @@ function Login() {
             <div className="flex h-8 w-8 items-center justify-center  ">
               <Logo />
             </div>
-            AFM ToUr.
+            AFM ToUr...
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
