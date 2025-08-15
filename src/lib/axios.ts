@@ -6,6 +6,12 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// if i axiosBaseQuery for frontend use
+// export const axiosInstance = axios.create({
+//   baseURL: "http://localhost:5000/api/v1", // ✅ backend base URL
+//   withCredentials: true, // allow cookies
+// });
+
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   function (config) {

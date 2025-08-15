@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import {
   Form,
   FormControl,
@@ -14,12 +14,14 @@ import {
 import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/Auth/auth.api";
 import { toast } from "sonner";
+import { baseApi } from "@/redux/features/baseApi"; // corrected path
 
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ✅ Add defaultValues to avoid uncontrolled inputs
   const form = useForm({
@@ -40,14 +42,16 @@ export function LoginForm({
 
       // Redirect after successful login
       toast.success("Login successful!");
-      navigate("/"); // Change to your actual dashboard route
+      // navigate("/"); // Change to your actual dashboard route
     } catch (error: any) {
       console.log("Login error", error);
 
       // Handle unverified account
       if (error?.data?.message?.includes("not verified")) {
         toast.error("Your account is not verified, please verify first.");
-        navigate("/verify", { state: data.email });
+        navigate("/verify", {
+          state: location?.state || { email: data.email }, //email not verify and send again otp in this mail use  location?.state || { email: data.email
+        });
         return;
       }
 
@@ -100,6 +104,27 @@ export function LoginForm({
           </Button>
         </form>
       </Form>
+      <div className="relative text-center text-sm after:absolute after:top-1/2 after:z-0 after:flex">
+        <span className="relative z-10 bg-background px-2 text-muted-foreground">
+          {/* http://localhost:5000/api/v1/auth/google */}
+          or continue with
+        </span>
+      </div>
+      <Button
+        onClick={() =>
+          window.open(
+            `${
+              import.meta.env.VITE_API_BASE_URL ||
+              "http://localhost:5000/api/v1"
+            }/auth/google`,
+            "_self"
+          )
+        }
+        type="button"
+        variant="outline"
+      >
+        Login with Google
+      </Button>
 
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}

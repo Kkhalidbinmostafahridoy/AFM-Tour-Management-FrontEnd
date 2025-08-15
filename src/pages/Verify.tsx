@@ -42,6 +42,10 @@ const FormSchema = z.object({
 function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
+  // const email = useState(location?.state?.email || "");
+  // if i use this
+  // card.tsx:43 Functions are not valid as a React child. This may happen if you return bound dispatchSetState instead of <bound dispatchSetState /> from render. Or maybe you meant to call this function rather than return it.
+
   const email = location?.state?.email || ""; //face this problem also use this way to get email from location state
   const [confermed, setConfirmed] = useState(false);
   const [sendOtp] = useSendOtpMutation();
@@ -57,13 +61,13 @@ function Verify() {
 
   const handleSendOtp = async () => {
     const toastId = toast.loading("Sending OTP...");
-    setConfirmed(true);
-    setTimer(10);
     try {
       const res = await sendOtp({ email: email }).unwrap();
 
       if (res.success) {
         toast.success("OTP sent successfully!", { id: toastId });
+        setConfirmed(true);
+        setTimer(10);
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
@@ -85,7 +89,6 @@ function Verify() {
       const res = await verifyOtp(userInfo).unwrap();
       if (res.success) {
         toast.success("OTP verified successfully!", { id: toastId });
-        setConfirmed(true);
         navigate("/login");
       }
     } catch (error) {
