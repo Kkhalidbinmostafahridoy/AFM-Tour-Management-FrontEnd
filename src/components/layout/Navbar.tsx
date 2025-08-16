@@ -30,13 +30,13 @@ export default function Navbar() {
   const { data } = useUserInfoQuery(undefined);
   console.log(data?.data?.email);
   const dispatch = useAppDispatch();
-  const Navigate = useNavigate();
+  // const Navigate = useNavigate();
   const [logout] = useLogoutMutation();
 
   const handleLogOut = async () => {
     await logout(undefined);
     dispatch(authApi.util.resetApiState());
-    Navigate("/login");
+    // Navigate("/login");
 
     // // Remove token from storage or redux
     // localStorage.removeItem("accessToken");
