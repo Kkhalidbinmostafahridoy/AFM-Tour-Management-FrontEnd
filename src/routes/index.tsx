@@ -1,10 +1,13 @@
 import App from "@/App";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import About from "@/pages/About";
 import Login from "@/pages/Login";
 import Register from "@/pages/Registar";
 import Verify from "@/pages/Verify";
-
-import { createBrowserRouter } from "react-router";
+import { generateRoutes } from "@/utils/GenerateRourtes";
+import { createBrowserRouter } from "react-router"; // ✅ keep this
+import { adminSideBarItems } from "./adminSideBarItems";
+import { userSideBarItems } from "./userSideBarItems";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +19,16 @@ export const router = createBrowserRouter([
         Component: About,
       },
     ],
+  },
+  {
+    path: "/admin",
+    Component: DashboardLayout,
+    children: [...generateRoutes(adminSideBarItems)],
+  },
+  {
+    path: "/user",
+    Component: DashboardLayout,
+    children: [...generateRoutes(userSideBarItems)],
   },
   {
     path: "/login",
