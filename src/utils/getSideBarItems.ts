@@ -6,7 +6,7 @@ import type { TRole } from "@/types/index.type";
 export const getSidebarItems = (userRole: TRole) => {
   switch (userRole) {
     case role.superAdmin:
-      return [...adminSideBarItems];
+      return [...adminSideBarItems, ...userSideBarItems];
     case role.admin:
       return [...adminSideBarItems];
     case role.user:

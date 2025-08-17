@@ -12,18 +12,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ModeToggle } from "./ModeToogler";
-import { Link, Navigate, useNavigate } from "react-router";
+// import { href, Link, Navigate, useNavigate } from "react-router";
 import {
   authApi,
   useLogoutMutation,
   useUserInfoQuery,
 } from "@/redux/features/Auth/auth.api";
 import { useAppDispatch } from "@/redux/features/hook";
+import { role } from "@/constants/role";
+import { Link } from "react-router";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+  { href: "/", label: "Home", userRole: "PUBLIC" },
+  { href: "/about", label: "About", userRole: "PUBLIC" },
+  { href: "/admin", label: "Dashboard", userRole: role.admin },
+  {
+    href: "/user",
+    label: "Dashboard",
+    userRole: role.user,
+  },
 ];
 
 export default function Navbar() {

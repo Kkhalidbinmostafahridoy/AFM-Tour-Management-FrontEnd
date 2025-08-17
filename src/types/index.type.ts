@@ -1,8 +1,13 @@
 import type { ComponentType } from "react";
 
-export type { ISendOtp } from "./auth.type";
-export type { IRegister } from "./auth.type";
-export type { ILogin } from "./auth.type";
+export type { ISendOtp, IVerifyOtp, ILogin } from "./auth.type";
+
+export interface IResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
+}
 
 export interface ISidebarItem {
   title: string;
