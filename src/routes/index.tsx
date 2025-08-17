@@ -5,9 +5,13 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Registar";
 import Verify from "@/pages/Verify";
 import { generateRoutes } from "@/utils/GenerateRourtes";
-import { createBrowserRouter } from "react-router"; // ✅ keep this
+import { createBrowserRouter, Navigate } from "react-router"; // ✅ keep this
 import { adminSideBarItems } from "./adminSideBarItems";
 import { userSideBarItems } from "./userSideBarItems";
+import { withAuth } from "@/utils/withAuth";
+import unAuthorize from "@/pages/unAuthorize";
+import { role } from "@/constants/role";
+import type { TRole } from "@/types/index.type";
 
 export const router = createBrowserRouter([
   {
@@ -15,20 +19,29 @@ export const router = createBrowserRouter([
     Component: App,
     children: [
       {
-        path: "/about",
-        Component: About,
+        path: "about",
+        Component: withAuth(About),
       },
     ],
   },
   {
     path: "/admin",
-    Component: DashboardLayout,
-    children: [...generateRoutes(adminSideBarItems)],
+    Component: withAuth(DashboardLayout, role.superAdmin as TRole),
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> }, //admin e click krle pathiye dibe  /admin/analytics
+      ...generateRoutes(adminSideBarItems),
+    ],
   },
   {
     path: "/user",
     Component: DashboardLayout,
-    children: [...generateRoutes(userSideBarItems)],
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/user/bookings" />,
+      },
+      ...generateRoutes(userSideBarItems),
+    ],
   },
   {
     path: "/login",
@@ -41,5 +54,9 @@ export const router = createBrowserRouter([
   {
     path: "/verify",
     Component: Verify,
+  },
+  {
+    path: "/unAuthorize",
+    Component: unAuthorize,
   },
 ]);
