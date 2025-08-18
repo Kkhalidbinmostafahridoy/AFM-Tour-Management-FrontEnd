@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -23,10 +24,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function AddTourDialogModal() {
-  const form = useForm();
-
+  const form = useForm<{ name: string }>();
   const [addTourType] = useAddTourTypeMutation();
-
   const [open, setOpen] = useState(false);
 
   const onSubmit = async (data: { name: string }) => {
@@ -34,9 +33,11 @@ export function AddTourDialogModal() {
       await addTourType({ name: data.name }).unwrap();
       toast.success("Tour Type Added");
       form.reset();
+      // Only close modal after success
       setOpen(false);
     } catch (error) {
       toast.error("❌ Failed to add Tour Type");
+      // Keep modal open
     }
   };
 
@@ -78,6 +79,9 @@ export function AddTourDialogModal() {
         </Form>
 
         <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
           <Button type="submit" form="addTourType">
             Save
           </Button>
