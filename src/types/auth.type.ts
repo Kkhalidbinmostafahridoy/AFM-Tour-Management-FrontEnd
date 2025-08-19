@@ -13,13 +13,6 @@ export interface ILogin {
   password: string;
 }
 
-export interface IResponse<T> {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: T;
-}
-
 export interface IVerifyOtp {
   email: string;
   otp: string;

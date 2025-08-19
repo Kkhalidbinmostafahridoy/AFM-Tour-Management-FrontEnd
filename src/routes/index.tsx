@@ -9,9 +9,15 @@ import { createBrowserRouter, Navigate } from "react-router"; // ✅ keep this
 import { adminSideBarItems } from "./adminSideBarItems";
 import { userSideBarItems } from "./userSideBarItems";
 import { withAuth } from "@/utils/withAuth";
-import unAuthorize from "@/pages/unAuthorize";
+
 import { role } from "@/constants/role";
 import type { TRole } from "@/types/index.type";
+import Home from "@/pages/Home";
+
+import unAuthorize from "@/pages/UnAuthorize";
+import TourDetails from "@/pages/TourDetails";
+import Tours from "@/pages/Tours";
+import Bookings from "@/pages/user/Bookings";
 
 export const router = createBrowserRouter([
   {
@@ -19,8 +25,24 @@ export const router = createBrowserRouter([
     Component: App,
     children: [
       {
+        index: true,
+        Component: withAuth(Home),
+      },
+      {
+        Component: About,
         path: "about",
-        Component: withAuth(About),
+      },
+      {
+        Component: Tours,
+        path: "tours",
+      },
+      {
+        path: "tours/:id",
+        Component: TourDetails,
+      },
+      {
+        path: "bookings",
+        Component: Bookings,
       },
     ],
   },

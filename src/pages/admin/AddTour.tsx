@@ -68,43 +68,55 @@ export function AddTour() {
     },
   });
 
-  const [addTour] = useAddTourMutation();
+  const [addTour] = useAddTourMutation(undefined);
 
   const onSubmit = async (data: any) => {
-    toast.loading("create loading...");
+    // Show loading toast and store ID
+    const toastId = toast.loading("Creating tour...");
+
     try {
+      // Prepare tour data
       const tourData = {
         ...data,
         startDate: data.startDate ? formatISO(data.startDate) : null,
         endDate: data.endDate ? formatISO(data.endDate) : null,
       };
 
+      // Append images and tour data to FormData
       const formData = new FormData();
       images.forEach((image) => formData.append("files", image));
       formData.append("data", JSON.stringify(tourData));
 
-      // ✅ Call mutation correctly
+      // Call the API mutation
       const res = await addTour(formData).unwrap();
 
-      console.log("✅ Tour Created:", res);
       if (res.success) {
-        toast.success("Tour Create Successfully...");
+        // Dismiss loading toast and show success
+        toast.dismiss(toastId);
+        toast.success("Tour created successfully!");
+
+        // Reset form and images
+        form.reset();
+        setImages([]);
+        setOpen(false);
+
+        console.log("Create a database in Successfully:", res.data);
       }
-      form.reset();
-      setImages([]);
-      setOpen(false);
     } catch (err) {
-      console.error("❌ Failed to create tour:", err);
+      // Dismiss loading and show error
+      toast.dismiss(toastId);
+      console.error("Failed to create tour:", err);
+      toast.error("Failed to create tour!");
     }
   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto" open={open} onChange={setOpen}>
       <CardHeader>
-        <CardTitle className="text-2xl underline mx-auto">
+        <CardTitle className="text-2xl underline mx-auto text-amber-700">
           Add New Tour
         </CardTitle>
-        <CardDescription className="mx-auto">
+        <CardDescription className="mx-auto text-blue-400">
           Enter your tour details
         </CardDescription>
       </CardHeader>

@@ -1,4 +1,6 @@
+import type { IResponse } from "@/types/index.type";
 import { baseApi } from "../baseApi";
+import type { ITourPackage } from "@/types/tour.type";
 
 export const tourApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -33,6 +35,15 @@ export const tourApi = baseApi.injectEndpoints({
       providesTags: ["TOUR"],
       transformResponse: (response) => response.data,
     }),
+    getAllTour: builder.query<ITourPackage[], unknown>({
+      query: (params) => ({
+        url: "/tour",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["TOUR"],
+      transformResponse: (response: IResponse<ITourPackage[]>) => response.data,
+    }),
   }),
 });
 
@@ -41,4 +52,5 @@ export const {
   useAddTourTypeMutation,
   useDeleteTourTypeMutation,
   useAddTourMutation,
+  useGetAllTourQuery,
 } = tourApi;
