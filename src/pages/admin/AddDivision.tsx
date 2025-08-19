@@ -1,17 +1,3 @@
-// import { AddDivisionModal } from "@/components/Modules/Admin/Division/AddDivisionModal";
-
-// function AddDivision() {
-//   return (
-//     <div className="division mx-auto border-x-8  items-center justify-center w-full">
-//       <h2 className="text-3xl px-[400px]">This is Division Component</h2>
-//       <p className="text-xl px-[520px]">Added Division</p>
-//       <AddDivisionModal />
-//     </div>
-//   );
-// }
-
-// export default AddDivision;
-
 import { RadioGroup } from "@/components/ui/radio-group";
 import { AddDivisionModal } from "@/components/Modules/Admin/Division/AddDivisionModal";
 import { Button } from "@/components/ui/button";
