@@ -1,6 +1,6 @@
 import { baseApi } from "../baseApi";
 
-export const tourApi = baseApi.injectEndpoints({
+export const divisionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     addDivision: builder.mutation({
       query: (divisionData) => ({
@@ -8,7 +8,7 @@ export const tourApi = baseApi.injectEndpoints({
         method: "POST",
         body: divisionData,
       }),
-      invalidatesTags: ["TOUR"],
+      invalidatesTags: ["DIVISION"],
     }),
 
     getDivisionTypes: builder.query({
@@ -16,10 +16,10 @@ export const tourApi = baseApi.injectEndpoints({
         url: "/division",
         method: "GET",
       }),
-      providesTags: ["TOUR"],
+      providesTags: ["DIVISION"],
       transformResponse: (response) => response.data,
     }),
   }),
 });
 
-export const { useGetDivisionTypesQuery, useAddDivisionMutation } = tourApi;
+export const { useGetDivisionTypesQuery, useAddDivisionMutation } = divisionApi;

@@ -1,5 +1,6 @@
 import AddDivision from "@/pages/admin/AddDivision";
-import AddTour from "@/pages/admin/AddTour";
+import { AddTour } from "@/pages/admin/AddTour";
+
 import { AddTourType } from "@/pages/admin/AddTourType";
 import type { ISidebarItem } from "@/types/index.type";
 import { lazy } from "react";
