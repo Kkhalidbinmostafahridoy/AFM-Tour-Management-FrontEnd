@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { FileMetadata } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { useGetDivisionTypesQuery } from "@/redux/features/division/division.api";
 import {
@@ -46,9 +45,7 @@ import { toast } from "sonner";
 export function AddTour() {
   const { data: divisionData } = useGetDivisionTypesQuery(undefined);
   const { data: tourTypeData } = useGetTourTypesQuery(undefined);
-  const [images, setImages] = useState<
-    ((File | FileMetadata) | FileMetadata)[]
-  >([]);
+  const [images, setImages] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
 
   const divisionOptions = divisionData?.data?.map(
@@ -74,8 +71,7 @@ export function AddTour() {
   const [addTour] = useAddTourMutation();
 
   const onSubmit = async (data: any) => {
-    const toastId = toast.loading("Creating tour..."); // get toast id
-
+    toast.loading("create loading...");
     try {
       const tourData = {
         ...data,
@@ -84,22 +80,20 @@ export function AddTour() {
       };
 
       const formData = new FormData();
-      images.forEach((image) => formData.append("files", image as File));
+      images.forEach((image) => formData.append("files", image));
       formData.append("data", JSON.stringify(tourData));
 
+      // ✅ Call mutation correctly
       const res = await addTour(formData).unwrap();
 
+      console.log("✅ Tour Created:", res);
       if (res.success) {
-        toast.success("Tour created successfully!", { id: toastId }); // update loading toast
-      } else {
-        toast.error("Failed to create tour.", { id: toastId }); // update loading toast
+        toast.success("Tour Create Successfully...");
       }
-
       form.reset();
       setImages([]);
       setOpen(false);
     } catch (err) {
-      toast.error("Failed to create tour.", { id: toastId }); // update loading toast
       console.error("❌ Failed to create tour:", err);
     }
   };
@@ -146,7 +140,7 @@ export function AddTour() {
                         <SelectValue placeholder="Select division" />
                       </SelectTrigger>
                       <SelectContent>
-                        {divisionOptions?.map((item: any) => (
+                        {divisionOptions?.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -169,7 +163,7 @@ export function AddTour() {
                         <SelectValue placeholder="Select tour type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {tourTypeData?.map((item: any) => (
+                        {tourTypeData?.map((item) => (
                           <SelectItem key={item._id} value={item._id}>
                             {item.name}
                           </SelectItem>
