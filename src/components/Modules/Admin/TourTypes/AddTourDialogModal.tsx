@@ -24,7 +24,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function AddTourDialogModal() {
-  const form = useForm<{ name: string }>();
+  const form = useForm<{ name: string }>({
+    defaultValues: { name: "" },
+  });
   const [addTourType] = useAddTourTypeMutation();
   const [open, setOpen] = useState(false);
 

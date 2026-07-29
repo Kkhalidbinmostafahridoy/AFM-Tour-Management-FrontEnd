@@ -4,9 +4,11 @@ export interface ISendOtp {
 }
 
 export interface IRegister {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
+  role: string;
 }
 export interface ILogin {
   email: string;

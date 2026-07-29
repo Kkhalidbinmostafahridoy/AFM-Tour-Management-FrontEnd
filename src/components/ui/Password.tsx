@@ -1,10 +1,9 @@
-import { useId, useState } from "react";
+import { useId, useState, forwardRef } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-export default function Password({ ...field }) {
+const Password = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, ...field }, ref) => {
   const id = useId();
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -15,9 +14,10 @@ export default function Password({ ...field }) {
       <div className="relative">
         <Input
           id={id}
-          className="pe-9"
+          className={`pe-9 ${className || ""}`}
           placeholder="********"
           type={isVisible ? "text" : "password"}
+          ref={ref}
           {...field}
         />
         <button
@@ -37,4 +37,7 @@ export default function Password({ ...field }) {
       </div>
     </div>
   );
-}
+});
+
+Password.displayName = "Password";
+export default Password;

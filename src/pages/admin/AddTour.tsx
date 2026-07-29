@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { PageWrapper } from "@/components/layout/PageWrapper";
 import MultipleImageUploader from "@/components/MultipleImageUploader";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -46,7 +47,6 @@ export function AddTour() {
   const { data: divisionData } = useGetDivisionTypesQuery(undefined);
   const { data: tourTypeData } = useGetTourTypesQuery(undefined);
   const [images, setImages] = useState<File[]>([]);
-  const [open, setOpen] = useState(false);
 
   const divisionOptions = divisionData?.data?.map(
     (item: { _id: string; name: string }) => ({
@@ -98,7 +98,6 @@ export function AddTour() {
         // Reset form and images
         form.reset();
         setImages([]);
-        setOpen(false);
 
         console.log("Create a database in Successfully:", res.data);
       }
@@ -111,8 +110,9 @@ export function AddTour() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto" open={open} onChange={setOpen}>
-      <CardHeader>
+    <PageWrapper>
+      <Card className="w-full max-w-2xl mx-auto bg-background/50 backdrop-blur-xl border-white/20 dark:border-gray-800/50 shadow-lg mt-4 mb-8">
+        <CardHeader>
         <CardTitle className="text-2xl underline mx-auto text-amber-700">
           Add New Tour
         </CardTitle>
@@ -152,7 +152,7 @@ export function AddTour() {
                         <SelectValue placeholder="Select division" />
                       </SelectTrigger>
                       <SelectContent>
-                        {divisionOptions?.map((item) => (
+                        {divisionOptions?.map((item: any) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -175,7 +175,7 @@ export function AddTour() {
                         <SelectValue placeholder="Select tour type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {tourTypeData?.map((item) => (
+                        {tourTypeData?.map((item: any) => (
                           <SelectItem key={item._id} value={item._id}>
                             {item.name}
                           </SelectItem>
@@ -345,5 +345,6 @@ export function AddTour() {
         </Form>
       </CardContent>
     </Card>
+    </PageWrapper>
   );
 }

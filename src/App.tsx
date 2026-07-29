@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import { CommonLayout } from "./components/layout/CommonLayout";
-import { generateRoutes } from "./utils/GenerateRourtes";
+import { generateRoutes } from "./utils/generateRourtes";
 import { adminSideBarItems } from "./routes/adminSideBarItems";
 
 function App() {

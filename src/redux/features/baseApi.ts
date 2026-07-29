@@ -1,12 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import config from "@/config";
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  // baseQuery: fetchBaseQuery()
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api/v1",
+    baseUrl: config.baseUrl || "http://localhost:5000/api/v1",
     credentials: "include",
   }),
-  tagTypes: ["USER", "TOUR", "DIVISION"],
+  tagTypes: ["TOUR", "AUTH", "USER", "DESTINATION", "SCHEDULE", "BOOKING", "WISHLIST", "HOTEL", "TRANSPORT", "GUIDE", "TICKET", "BLOG"],
   endpoints: () => ({}),
 });
