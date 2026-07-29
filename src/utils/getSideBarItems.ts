@@ -1,15 +1,14 @@
-import { role } from "@/constants/role";
 import { adminSideBarItems } from "@/routes/adminSideBarItems";
 import { userSideBarItems } from "@/routes/userSideBarItems";
-import type { TRole } from "@/types/index.type";
 
-export const getSidebarItems = (userRole: TRole) => {
-  switch (userRole) {
-    case role.superAdmin:
+export const getSidebarItems = (userRole: string) => {
+  const normalizedUserRole = userRole?.toUpperCase().replace(/_/g, "");
+  switch (normalizedUserRole) {
+    case "SUPERADMIN":
       return [...adminSideBarItems, ...userSideBarItems]; //access dashboard
-    case role.admin:
+    case "ADMIN":
       return [...adminSideBarItems, ...userSideBarItems]; // for access dashboard
-    case role.user:
+    case "USER":
       return [...userSideBarItems];
     default:
       return [];

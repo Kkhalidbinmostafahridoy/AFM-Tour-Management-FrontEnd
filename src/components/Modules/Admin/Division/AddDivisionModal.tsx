@@ -29,12 +29,14 @@ export function AddDivisionModal() {
   const [image, setImage] = useState<File | null>(null);
 
   console.log("add modal", image);
-  const form = useForm();
+  const form = useForm({
+    defaultValues: { name: "", description: "" },
+  });
   const [open, setOpen] = useState(false);
   const [addDivision] = useAddDivisionMutation();
 
-  const onSubmit = async (data: { name: string }) => {
-    toast.loading("file uploaded loading....");
+  const onSubmit = async (data: any) => {
+    const toastId = toast.loading("file uploaded loading....");
     try {
       console.log(data);
 
@@ -44,7 +46,8 @@ export function AddDivisionModal() {
       formData.append("file", image as File);
 
       const res = await addDivision(formData).unwrap();
-      toast.success("division Added successfully done", { id: toast.loading });
+      console.log(res);
+      toast.success("division Added successfully done", { id: toastId });
       setOpen(false);
     } catch (error) {
       toast.error(" Failed to add Tour Type");

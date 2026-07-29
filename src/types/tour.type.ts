@@ -16,4 +16,11 @@ export interface ITourPackage {
   updatedAt: string;
   slug: string;
   __v: number;
+  costFrom: number;
+  maxGuest: number;
+  departureLocation: string;
+  arrivalLocation: string;
+  minAge: number;
+  price?: number;
+  difficulty?: string;
 }

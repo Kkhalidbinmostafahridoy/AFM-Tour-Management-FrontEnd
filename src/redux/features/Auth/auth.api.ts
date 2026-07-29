@@ -1,10 +1,10 @@
 import type {
   ILogin,
   IRegister,
-  IResponse,
   ISendOtp,
   IVerifyOtp,
 } from "@/types/auth.type";
+import type { IResponse } from "@/types/index.type";
 import { baseApi } from "../baseApi";
 
 export const authApi = baseApi.injectEndpoints({
@@ -44,6 +44,13 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["USER"],
     }),
+    changePassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/change-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
     userInfo: builder.query({
       query: () => ({
         url: "/user/get-me",
@@ -61,4 +68,5 @@ export const {
   useVerifyOtpMutation,
   useUserInfoQuery,
   useLogoutMutation,
+  useChangePasswordMutation,
 } = authApi;

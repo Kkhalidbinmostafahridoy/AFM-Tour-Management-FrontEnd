@@ -19,6 +19,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
 import { useRegisterMutation } from "@/redux/features/Auth/auth.api";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const registerSchema = z
   .object({
@@ -32,6 +39,7 @@ const registerSchema = z
     email: z.email(),
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z.string().min(8, "Password doesn't match"),
+    role: z.string().min(1, "Please select a role"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -61,6 +69,7 @@ export function RegistrationFrom({
       email: "",
       password: "",
       confirmPassword: "",
+      role: "",
     },
   });
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -69,16 +78,21 @@ export function RegistrationFrom({
       email: data.email,
       password: data.password,
       confirmPassword: data.confirmPassword,
+      role: data.role,
     };
     try {
-      const result = await register(userInfo).unwrap();
+      const result: any = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User Created successful!");
       if (result.data && result.data.email) {
         navigate("/verify", { state: { email: result.data.email } });
-      } // Redirect to the verify page with email for send OTP
-    } catch (error) {
+      } else {
+        navigate("/verify", { state: { email: data.email } });
+      }
+    } catch (error: any) {
       console.log(error);
+      const message = error?.data?.message || "Registration failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -162,6 +176,29 @@ export function RegistrationFrom({
                   <FormDescription className="sr-only">
                     This is your public display confirmPassword.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="USER">User</SelectItem>
+                      <SelectItem value="CUSTOMER">Customer</SelectItem>
+                      <SelectItem value="GUIDE">Guide</SelectItem>
+                      <SelectItem value="TOUR_MANAGER">Tour Manager</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

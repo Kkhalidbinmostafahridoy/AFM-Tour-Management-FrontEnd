@@ -1,13 +1,13 @@
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 
-import { useFileUpload, type FileMetadata } from "@/hooks/use-file-upload";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
-import { useEffect, type Dispatch } from "react";
+import { useEffect } from "react";
 
 export default function MultipleImageUploader({
   onChange,
 }: {
-  onChange: Dispatch<React.SetStateAction<[] | (File | FileMetadata)>>;
+  onChange: (files: File[]) => void;
 }) {
   const maxSizeMB = 5;
   const maxSize = maxSizeMB * 1024 * 1024; // 5MB default
@@ -33,7 +33,9 @@ export default function MultipleImageUploader({
 
   useEffect(() => {
     if (files.length > 0) {
-      const imageList = files.map((item) => item.file);
+      const imageList = files
+        .map((item) => item.file)
+        .filter((file): file is File => file instanceof File);
 
       onChange(imageList);
     } else {

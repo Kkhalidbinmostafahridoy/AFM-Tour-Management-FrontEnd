@@ -4,7 +4,7 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
-export default function SingleImageUploader({ onChange }) {
+export default function SingleImageUploader({ onChange }: { onChange: (file: File | null) => void }) {
   const [
     { files, isDragging },
     {
@@ -24,7 +24,8 @@ export default function SingleImageUploader({ onChange }) {
 
   useEffect(() => {
     if (files.length > 0) {
-      onChange(files[0].file);
+      const fileObj = files[0].file;
+      onChange(fileObj instanceof File ? fileObj : null);
     } else {
       onChange(null);
     }

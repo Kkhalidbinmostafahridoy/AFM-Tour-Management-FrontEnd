@@ -1,19 +1,52 @@
 import Logo from "@/assets/icons/Logo";
 
+import { useState } from "react";
+import { useSubscribeNewsletterMutation } from "@/redux/features/newsletter/newsletter.api";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [subscribe, { isLoading }] = useSubscribeNewsletterMutation();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    try {
+      await subscribe({ email }).unwrap();
+      toast.success("Subscribed to newsletter successfully!");
+      setEmail("");
+    } catch (err: any) {
+      toast.error(err.data?.message || "Failed to subscribe");
+    }
+  };
+
   return (
-    <footer>
+    <footer className="border-t border-gray-200 mt-20">
       <div className="mx-auto container space-y-8 px-4 py-16">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+          <div className="col-span-1 lg:col-span-2">
             <div className="text-foreground">
               <Logo />
             </div>
 
-            <p className="mt-4 max-w-xs text-muted-foreground/80">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non
-              cupiditate quae nam molestias.
+            <p className="mt-4 max-w-md text-muted-foreground/80">
+              Your ultimate travel companion. We offer the best tour experiences around the world, making sure every journey is unforgettable.
             </p>
+
+            <form onSubmit={handleSubscribe} className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md">
+              <Input
+                type="email"
+                placeholder="Enter your email to subscribe"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-50"
+              />
+              <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
+                {isLoading ? "Subscribing..." : "Subscribe"}
+              </Button>
+            </form>
 
             <ul className="mt-8 flex gap-6">
               <li>
@@ -134,7 +167,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2">
             <div>
               <p className="font-medium text-muted-foreground/160">Services</p>
 
