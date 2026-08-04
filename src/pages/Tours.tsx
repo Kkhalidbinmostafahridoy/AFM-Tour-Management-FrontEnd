@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGetAllTourQuery } from "@/redux/features/Tour/tour.api";
-import { useGetWishlistQuery, useToggleWishlistMutation } from "@/redux/features/wishlist/wishlist.api";
+import {
+  useGetWishlistQuery,
+  useToggleWishlistMutation,
+} from "@/redux/features/wishlist/wishlist.api";
 import { Link, useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -20,16 +25,55 @@ const CATEGORIES = [
 ];
 
 // Icon + gradient mapping per category
-const CATEGORY_META: Record<string, { icon: string; gradient: string; activeGrad: string }> = {
-  All:       { icon: "🌏", gradient: "from-slate-700 to-slate-800", activeGrad: "linear-gradient(135deg,#6c63ff,#302b63)" },
-  Adventure: { icon: "🏔️", gradient: "from-orange-700 to-red-800",  activeGrad: "linear-gradient(135deg,#f5a623,#e8421a)" },
-  Family:    { icon: "👨‍👩‍👧‍👦", gradient: "from-green-700 to-teal-800", activeGrad: "linear-gradient(135deg,#11998e,#38ef7d)" },
-  Couple:    { icon: "💑", gradient: "from-pink-700 to-rose-800",   activeGrad: "linear-gradient(135deg,#f093fb,#f5576c)" },
-  Honeymoon: { icon: "💍", gradient: "from-fuchsia-700 to-purple-800", activeGrad: "linear-gradient(135deg,#c471ed,#f64f59)" },
-  Religious: { icon: "🕌", gradient: "from-amber-700 to-yellow-800", activeGrad: "linear-gradient(135deg,#f7971e,#ffd200)" },
-  Beach:     { icon: "🏖️", gradient: "from-cyan-700 to-blue-800",   activeGrad: "linear-gradient(135deg,#43b89c,#00b4db)" },
-  Hill:      { icon: "⛰️", gradient: "from-emerald-700 to-green-800", activeGrad: "linear-gradient(135deg,#56ab2f,#a8e063)" },
-  Wildlife:  { icon: "🦁", gradient: "from-yellow-700 to-amber-800", activeGrad: "linear-gradient(135deg,#f7971e,#e65c00)" },
+const CATEGORY_META: Record<
+  string,
+  { icon: string; gradient: string; activeGrad: string }
+> = {
+  All: {
+    icon: "",
+    gradient: "from-slate-700 to-slate-800",
+    activeGrad: "linear-gradient(135deg,#6c63ff,#302b63)",
+  },
+  Adventure: {
+    icon: "",
+    gradient: "from-orange-700 to-red-800",
+    activeGrad: "linear-gradient(135deg,#f5a623,#e8421a)",
+  },
+  Family: {
+    icon: "",
+    gradient: "from-green-700 to-teal-800",
+    activeGrad: "linear-gradient(135deg,#11998e,#38ef7d)",
+  },
+  Couple: {
+    icon: "",
+    gradient: "from-pink-700 to-rose-800",
+    activeGrad: "linear-gradient(135deg,#f093fb,#f5576c)",
+  },
+  Honeymoon: {
+    icon: "",
+    gradient: "from-fuchsia-700 to-purple-800",
+    activeGrad: "linear-gradient(135deg,#c471ed,#f64f59)",
+  },
+  Religious: {
+    icon: "",
+    gradient: "from-amber-700 to-yellow-800",
+    activeGrad: "linear-gradient(135deg,#f7971e,#ffd200)",
+  },
+  Beach: {
+    icon: "",
+    gradient: "from-cyan-700 to-blue-800",
+    activeGrad: "linear-gradient(135deg,#43b89c,#00b4db)",
+  },
+  Hill: {
+    icon: "",
+    gradient: "from-emerald-700 to-green-800",
+    activeGrad: "linear-gradient(135deg,#56ab2f,#a8e063)",
+  },
+  Wildlife: {
+    icon: "",
+    gradient: "from-yellow-700 to-amber-800",
+    activeGrad: "linear-gradient(135deg,#f7971e,#e65c00)",
+  },
 };
 
 export default function Tours() {
@@ -50,8 +94,12 @@ export default function Tours() {
   const { data: wishlistData } = useGetWishlistQuery(undefined);
   const [toggleWishlist] = useToggleWishlistMutation();
 
-  const myWishlist = Array.isArray(wishlistData) ? wishlistData[0] : wishlistData;
-  const wishlistedTourIds = myWishlist?.tours?.map((t: any) => typeof t === 'string' ? t : t._id) || [];
+  const myWishlist = Array.isArray(wishlistData)
+    ? wishlistData[0]
+    : wishlistData;
+  const wishlistedTourIds =
+    myWishlist?.tours?.map((t: any) => (typeof t === "string" ? t : t._id)) ||
+    [];
 
   const handleToggleWishlist = async (e: React.MouseEvent, tourId: string) => {
     e.preventDefault();
@@ -59,8 +107,10 @@ export default function Tours() {
     try {
       await toggleWishlist(tourId).unwrap();
       const isWishlisted = wishlistedTourIds.includes(tourId);
-      toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist!");
-    } catch (error) {
+      toast.success(
+        isWishlisted ? "Removed from wishlist" : "Added to wishlist!",
+      );
+    } catch (error: any) {
       toast.error("Failed to update wishlist. Please login.");
     }
   };
@@ -83,13 +133,19 @@ export default function Tours() {
   };
 
   const filteredTours = data?.filter((tour) =>
-    tour.title.toLowerCase().includes(searchTerm.toLowerCase())
+    tour.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const meta = CATEGORY_META[activeCategory] || CATEGORY_META["All"];
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: "linear-gradient(180deg,#0f0c29 0%,#1a1740 60%,#0d0d1a 100%)" }}>
+    <div
+      className="min-h-screen pb-24"
+      style={{
+        background:
+          "linear-gradient(180deg,#0f0c29 0%,#1a1740 60%,#0d0d1a 100%)",
+      }}
+    >
       {/* ── Hero Header ──────────────────────────────── */}
       <div className="relative overflow-hidden pt-20 pb-14 px-4">
         {/* Animated background blobs */}
@@ -132,7 +188,8 @@ export default function Tours() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight"
             style={{
-              background: "linear-gradient(135deg,#fff 0%,#a5b4fc 55%,#f093fb 100%)",
+              background:
+                "linear-gradient(135deg,#fff 0%,#a5b4fc 55%,#f093fb 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -160,9 +217,20 @@ export default function Tours() {
             transition={{ delay: 0.3 }}
             className="relative max-w-xl mx-auto"
           >
-            <span className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#a5b4fc" }}>
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <span
+              className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: "#a5b4fc" }}
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
             </span>
             <Input
@@ -234,7 +302,9 @@ export default function Tours() {
           >
             <span className="text-2xl">{meta.icon}</span>
             <div>
-              <p className="text-white font-bold text-sm">{activeCategory} Tours</p>
+              <p className="text-white font-bold text-sm">
+                {activeCategory} Tours
+              </p>
               <p className="text-xs" style={{ color: "rgba(165,180,252,0.6)" }}>
                 {filteredTours?.length ?? 0} packages found
               </p>
@@ -259,9 +329,14 @@ export default function Tours() {
         {isError && (
           <div
             className="text-center p-10 rounded-3xl"
-            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+            style={{
+              background: "rgba(239,68,68,0.08)",
+              border: "1px solid rgba(239,68,68,0.2)",
+            }}
           >
-            <p className="text-red-400 font-semibold text-lg">Failed to load tours. Please try again later.</p>
+            <p className="text-red-400 font-semibold text-lg">
+              Failed to load tours. Please try again later.
+            </p>
           </div>
         )}
 
@@ -270,7 +345,9 @@ export default function Tours() {
           <div className="text-center p-16">
             <div className="text-6xl mb-4">🔍</div>
             <p className="text-2xl font-bold text-white mb-2">No tours found</p>
-            <p style={{ color: "rgba(165,180,252,0.6)" }}>Try adjusting your search filters or category.</p>
+            <p style={{ color: "rgba(165,180,252,0.6)" }}>
+              Try adjusting your search filters or category.
+            </p>
           </div>
         )}
 
@@ -287,7 +364,10 @@ export default function Tours() {
           {filteredTours?.map((item) => (
             <motion.div
               key={item._id}
-              variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }}
+              variants={{
+                hidden: { opacity: 0, y: 24 },
+                visible: { opacity: 1, y: 0 },
+              }}
               whileHover={{ y: -4 }}
               className="group relative rounded-3xl overflow-hidden flex flex-col md:flex-row transition-all duration-300"
               style={{
@@ -300,7 +380,10 @@ export default function Tours() {
               {/* Glow on hover */}
               <div
                 className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ boxShadow: "inset 0 0 0 1.5px rgba(165,180,252,0.25), 0 0 60px rgba(108,99,255,0.12)" }}
+                style={{
+                  boxShadow:
+                    "inset 0 0 0 1.5px rgba(165,180,252,0.25), 0 0 60px rgba(108,99,255,0.12)",
+                }}
               />
 
               {/* Image Section */}
@@ -318,17 +401,24 @@ export default function Tours() {
                   <span
                     className="px-3 py-1 text-xs font-bold rounded-full"
                     style={{
-                      background: CATEGORY_META[item.tourType]?.activeGrad || "linear-gradient(135deg,#6c63ff,#302b63)",
+                      background:
+                        CATEGORY_META[item.tourType]?.activeGrad ||
+                        "linear-gradient(135deg,#6c63ff,#302b63)",
                       color: "white",
                       boxShadow: "0 2px 10px rgba(0,0,0,0.35)",
                     }}
                   >
-                    {CATEGORY_META[item.tourType]?.icon || "🌏"} {item.tourType || "Standard"}
+                    {CATEGORY_META[item.tourType]?.icon || "🌏"}{" "}
+                    {item.tourType || "Standard"}
                   </span>
                   {item.difficulty && (
                     <span
                       className="px-3 py-1 text-xs font-bold rounded-full capitalize"
-                      style={{ background: "rgba(0,0,0,0.55)", color: "white", backdropFilter: "blur(8px)" }}
+                      style={{
+                        background: "rgba(0,0,0,0.55)",
+                        color: "white",
+                        backdropFilter: "blur(8px)",
+                      }}
                     >
                       {item.difficulty}
                     </span>
@@ -349,10 +439,25 @@ export default function Tours() {
                     border: wishlistedTourIds.includes(item._id)
                       ? "1px solid rgba(239,68,68,0.3)"
                       : "1px solid rgba(255,255,255,0.1)",
-                    color: wishlistedTourIds.includes(item._id) ? "#f87171" : "rgba(165,180,252,0.5)",
+                    color: wishlistedTourIds.includes(item._id)
+                      ? "#f87171"
+                      : "rgba(165,180,252,0.5)",
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={wishlistedTourIds.includes(item._id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill={
+                      wishlistedTourIds.includes(item._id)
+                        ? "currentColor"
+                        : "none"
+                    }
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-5 h-5"
+                  >
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                   </svg>
                 </button>
@@ -374,49 +479,70 @@ export default function Tours() {
                       >
                         ৳{item.price || item.costFrom || 0}
                       </span>
-                      <span className="text-xs font-medium" style={{ color: "rgba(165,180,252,0.55)" }}>per person</span>
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: "rgba(165,180,252,0.55)" }}
+                      >
+                        per person
+                      </span>
                     </div>
                   </div>
 
-                  <p className="text-sm mb-5 line-clamp-2" style={{ color: "rgba(165,180,252,0.7)" }}>
+                  <p
+                    className="text-sm mb-5 line-clamp-2"
+                    style={{ color: "rgba(165,180,252,0.7)" }}
+                  >
                     {item.description}
                   </p>
 
                   {/* Stats grid */}
                   <div
                     className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm mb-5 p-4 rounded-2xl"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                    }}
                   >
                     {[
                       { label: "Departure", value: item.departureLocation },
                       { label: "Arrival", value: item.arrivalLocation },
-                      { label: "Duration", value: `${item.tourPlan?.length || 1} Days` },
+                      {
+                        label: "Duration",
+                        value: `${item.tourPlan?.length || 1} Days`,
+                      },
                       { label: "Max Guests", value: `${item.maxGuest} People` },
                     ].map((stat) => (
                       <div key={stat.label} className="flex flex-col">
-                        <span className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "rgba(165,180,252,0.45)" }}>
+                        <span
+                          className="text-xs font-semibold uppercase tracking-wider mb-1"
+                          style={{ color: "rgba(165,180,252,0.45)" }}
+                        >
                           {stat.label}
                         </span>
-                        <span className="font-bold text-white text-sm">{stat.value}</span>
+                        <span className="font-bold text-white text-sm">
+                          {stat.value}
+                        </span>
                       </div>
                     ))}
                   </div>
 
                   {/* Amenity tags */}
                   <div className="flex flex-wrap gap-2 mb-5">
-                    {item.amenities?.slice(0, 4).map((amenity: string, index: number) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 text-xs font-medium rounded-lg"
-                        style={{
-                          background: "rgba(52,211,153,0.1)",
-                          color: "#6ee7b7",
-                          border: "1px solid rgba(52,211,153,0.2)",
-                        }}
-                      >
-                        ✓ {amenity}
-                      </span>
-                    ))}
+                    {item.amenities
+                      ?.slice(0, 4)
+                      .map((amenity: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 text-xs font-medium rounded-lg"
+                          style={{
+                            background: "rgba(52,211,153,0.1)",
+                            color: "#6ee7b7",
+                            border: "1px solid rgba(52,211,153,0.2)",
+                          }}
+                        >
+                          ✓ {amenity}
+                        </span>
+                      ))}
                     {item.amenities?.length > 4 && (
                       <span
                         className="px-3 py-1 text-xs font-medium rounded-lg"

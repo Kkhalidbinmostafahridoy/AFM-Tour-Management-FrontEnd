@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { IResponse } from "@/types/index.type";
 import { baseApi } from "../baseApi";
 import type { ITourPackage } from "@/types/tour.type";
@@ -44,6 +45,16 @@ export const tourApi = baseApi.injectEndpoints({
       providesTags: ["TOUR"],
       transformResponse: (response: IResponse<ITourPackage[]>) => response.data,
     }),
+
+    // ✅ NEW: Single tour by ID — hits /tour/:id
+    getSingleTour: builder.query<ITourPackage, string>({
+      query: (id) => ({
+        url: `/tour/${id}`,
+        method: "GET",
+      }),
+      providesTags: (_result, _error, id) => [{ type: "TOUR", id }],
+      transformResponse: (response: IResponse<ITourPackage>) => response.data,
+    }),
   }),
 });
 
@@ -53,4 +64,5 @@ export const {
   useDeleteTourTypeMutation,
   useAddTourMutation,
   useGetAllTourQuery,
+  useGetSingleTourQuery,
 } = tourApi;
