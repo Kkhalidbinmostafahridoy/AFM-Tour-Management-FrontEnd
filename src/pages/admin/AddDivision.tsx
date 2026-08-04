@@ -1,58 +1,23 @@
-// import { AddDivisionModal } from "@/components/Modules/Admin/Division/AddDivisionModal";
-// import { Button } from "@/components/ui/button";
-// import { PageWrapper } from "@/components/layout/PageWrapper";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { useGetDivisionTypesQuery } from "@/redux/features/division/division.api";
-// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-// export default function AddDivision() {
-//   const { data } = useGetDivisionTypesQuery(undefined);
-
-//   return (
-//     <PageWrapper>
-//       <div className="w-full max-w-7xl mx-auto px-5">
-//         <div className="flex justify-between my-6 items-center">
-//           <h1 className="text-3xl font-bold tracking-tight">Divisions</h1>
-//           <Button asChild>
-//             <AddDivisionModal />
-//           </Button>
-//         </div>
-
-//         <Card className="bg-background/50 backdrop-blur-xl border-white/20 dark:border-gray-800/50 shadow-sm mt-4">
-//           <CardContent className="p-0">
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead className="w-full pl-6">Division Name</TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {data?.data?.map((item: { _id: string; name: string }) => (
-//                   <TableRow key={item._id} className="hover:bg-muted/50 transition-colors">
-//                     <TableCell className="w-full pl-6 font-medium">{item.name}</TableCell>
-//                   </TableRow>
-//                 ))}
-//                 {!data?.data?.length && (
-//                   <TableRow>
-//                     <TableCell className="text-center py-8 text-muted-foreground">
-//                       No divisions found. Add one to get started!
-//                     </TableCell>
-//                   </TableRow>
-//                 )}
-//               </TableBody>
-//             </Table>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </PageWrapper>
-//   );
-// }
+import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  MapPin,
+  ImageOff,
+  Pencil,
+  Loader2,
+  Trash2,
+  Search,
+  Globe2,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
+import { toast } from "sonner";
 
 import { AddDivisionModal } from "@/components/Modules/Admin/Division/AddDivisionModal";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetDivisionTypesQuery } from "@/redux/features/division/division.api";
 import {
   Table,
   TableBody,
@@ -61,184 +26,302 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { MapPin, ImageOff, Pencil, Loader2, Trash2 } from "lucide-react";
+import {
+  useGetDivisionTypesQuery,
+  useDeleteDivisionMutation,
+} from "@/redux/features/division/division.api";
 import { DeleteConfirmation } from "@/components/DeleteConfirmation";
 
+// TypeScript Interface
+interface DivisionItem {
+  _id: string;
+  name: string;
+  slug?: string;
+  thumbnail?: string;
+  createdAt?: string;
+}
+
 export default function AddDivision() {
-  // Polling interval added for LIVE data sync every 15 seconds
-  const { data, isLoading, isFetching } = useGetDivisionTypesQuery(undefined, {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Live polling interval for real-time data sync
+  const {
+    data: rawData,
+    isLoading,
+    isFetching,
+  } = useGetDivisionTypesQuery(undefined, {
     pollingInterval: 15000,
     refetchOnFocus: true,
   });
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  // Initialize Delete Mutation
+  const [deleteDivision] = useDeleteDivisionMutation();
 
+  // 🛡️ SAFE DATA NORMALIZATION
+  const divisions: DivisionItem[] = useMemo(() => {
+    if (Array.isArray(rawData)) return rawData;
+    if (rawData && Array.isArray(rawData.data)) return rawData.data;
+    return [];
+  }, [rawData]);
+
+  // Client-side Search Filter
+  const filteredDivisions = useMemo(() => {
+    return divisions.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.slug?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [divisions, searchTerm]);
+
+  // Delete Division Handler
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setDeletingId(id);
+    const toastId = toast.loading("Deleting division...");
+
     try {
-      // TODO: wire up actual delete mutation when available
-      console.log("Delete division", id);
+      await deleteDivision(id).unwrap();
+      toast.success("Division deleted successfully", { id: toastId });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.data?.message || "Failed to delete division", {
+        id: toastId,
+      });
     } finally {
-      setIsDeleting(false);
+      setDeletingId(null);
     }
   };
 
-  const divisions = data?.data || [];
-
   return (
     <PageWrapper>
-      <div className="w-full max-w-7xl mx-auto px-5 py-6">
-        {/* Header Section */}
+      <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        {/* Header Banner */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row justify-between md:items-center my-6 gap-4"
+          className="relative overflow-hidden rounded-3xl border border-border/40 bg-card/60 p-6 shadow-sm backdrop-blur-xl"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
-              <MapPin className="w-8 h-8" />
+          <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-inner">
+                <MapPin className="h-8 w-8" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+                    Geographic Divisions
+                  </h1>
+                  <span className="flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-500">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    </span>
+                    {isFetching && !isLoading ? "Syncing" : "Live"}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Manage regional divisions and destinations across tour
+                  networks.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Divisions
-              </h1>
-              <p className="text-muted-foreground flex items-center gap-2 text-sm mt-1">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                Live sync{" "}
-                {isFetching && !isLoading ? "- Updating..." : "- Active"}
-              </p>
+
+            <Button
+              asChild
+              className="bg-primary font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
+            >
+              <AddDivisionModal />
+            </Button>
+          </div>
+
+          {/* Quick Metrics Bar */}
+          <div className="mt-6 grid grid-cols-2 gap-3 border-t border-border/40 pt-4 sm:grid-cols-3">
+            <div className="flex items-center gap-3 rounded-xl border border-border/40 bg-muted/30 p-3">
+              <Globe2 className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-[11px] text-muted-foreground">
+                  Total Divisions
+                </p>
+                <p className="text-base font-bold text-foreground">
+                  {divisions.length}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-xl border border-border/40 bg-muted/30 p-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              <div>
+                <p className="text-[11px] text-muted-foreground">
+                  System Status
+                </p>
+                <p className="text-base font-bold text-foreground">
+                  Operational
+                </p>
+              </div>
+            </div>
+
+            <div className="col-span-2 flex items-center gap-3 rounded-xl border border-border/40 bg-muted/30 p-3 sm:col-span-1">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              <div>
+                <p className="text-[11px] text-muted-foreground">
+                  Sync Interval
+                </p>
+                <p className="text-base font-bold text-foreground">
+                  15s Auto-fetch
+                </p>
+              </div>
             </div>
           </div>
-          <Button
-            asChild
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg"
-          >
-            <AddDivisionModal />
-          </Button>
         </motion.div>
 
-        {/* Table Card */}
-        <Card className="bg-background/50 backdrop-blur-xl border-white/20 dark:border-gray-800/50 shadow-sm mt-4 overflow-hidden">
+        {/* Action & Filter Bar */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search division name or slug..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-10 pl-10 text-sm"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Showing{" "}
+            <span className="font-semibold text-foreground">
+              {filteredDivisions.length}
+            </span>{" "}
+            of {divisions.length} divisions
+          </p>
+        </div>
+
+        {/* Table Container */}
+        <Card className="overflow-hidden border border-border/40 bg-card/60 shadow-xl backdrop-blur-xl">
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="space-y-6 p-6">
+              <div className="space-y-4 p-6">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-4 animate-pulse"
+                    className="flex animate-pulse items-center gap-4"
                   >
-                    <div className="w-14 h-14 bg-gray-200 rounded-xl"></div>
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/6"></div>
+                    <div className="h-14 w-14 rounded-xl bg-muted"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-1/4 rounded bg-muted"></div>
+                      <div className="h-3 w-1/6 rounded bg-muted"></div>
                     </div>
-                    <div className="h-8 w-8 bg-gray-200 rounded-md"></div>
+                    <div className="h-8 w-16 rounded-md bg-muted"></div>
                   </div>
                 ))}
               </div>
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow className="hover:bg-transparent border-b border-gray-100 dark:border-gray-800">
-                    <TableHead className="pl-6 w-[100px]">Image</TableHead>
-                    <TableHead>Division Name</TableHead>
-                    <TableHead className="hidden md:table-cell">Slug</TableHead>
-                    <TableHead className="text-right pr-6">Action</TableHead>
+                  <TableRow className="border-b border-border/60 bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="py-4 pl-6 text-xs font-bold uppercase tracking-wider text-muted-foreground w-[100px]">
+                      Thumbnail
+                    </TableHead>
+                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Division Name
+                    </TableHead>
+                    <TableHead className="hidden text-xs font-bold uppercase tracking-wider text-muted-foreground sm:table-cell">
+                      Slug Reference
+                    </TableHead>
+                    <TableHead className="pr-6 text-right text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {divisions.length > 0 ? (
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    divisions.map((item: any, index: number) => (
-                      <motion.div
+                  {filteredDivisions.length > 0 ? (
+                    filteredDivisions.map((item) => (
+                      // 🔴 FIXED: Removed MotionTableRow, using standard TableRow
+                      <TableRow
                         key={item._id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="contents"
+                        className="group border-b border-border/30 transition-colors hover:bg-muted/30"
                       >
-                        <TableRow className="group hover:bg-muted/40 transition-colors duration-200 border-b border-gray-50 dark:border-gray-800/50 last:border-0">
-                          <TableCell className="pl-6 py-4">
-                            <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700">
-                              {item.thumbnail ? (
-                                <img
-                                  src={item.thumbnail}
-                                  alt={item.name}
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                />
-                              ) : (
-                                <ImageOff className="w-5 h-5 text-gray-400" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-bold text-gray-800 dark:text-gray-100 text-base">
-                            {item.name}
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell text-muted-foreground">
-                            <span className="font-mono text-xs bg-muted px-2 py-1 rounded-md">
-                              /
-                              {item.slug ||
-                                item.name.toLowerCase().replace(/\s+/g, "-")}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right pr-6">
-                            <div className="flex justify-end gap-2">
-                              {/* You can wire this to an Edit Modal if you have one */}
+                        <TableCell className="py-3 pl-6">
+                          <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/50 shadow-sm">
+                            {item.thumbnail ? (
+                              <img
+                                src={item.thumbnail}
+                                alt={item.name}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                              />
+                            ) : (
+                              <ImageOff className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="font-bold text-foreground">
+                          {item.name}
+                        </TableCell>
+
+                        <TableCell className="hidden text-xs text-muted-foreground sm:table-cell">
+                          <span className="rounded-md border border-border bg-muted/50 px-2.5 py-1 font-mono text-[11px] text-primary">
+                            /
+                            {item.slug ||
+                              item.name.toLowerCase().replace(/\s+/g, "-")}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="pr-6 text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+
+                            <DeleteConfirmation
+                              onConfirm={() => handleDelete(item._id)}
+                            >
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                disabled={deletingId === item._id}
+                                className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                               >
-                                <Pencil className="w-4 h-4" />
+                                {deletingId === item._id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
                               </Button>
-
-                              <DeleteConfirmation
-                                onConfirm={() => handleDelete(item._id)}
-                              >
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  disabled={isDeleting}
-                                  className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 transition-colors"
-                                >
-                                  {isDeleting ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                  )}
-                                </Button>
-                              </DeleteConfirmation>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      </motion.div>
+                            </DeleteConfirmation>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     ))
                   ) : (
-                    <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={4} className="text-center py-16">
-                        <div className="flex flex-col items-center justify-center gap-4">
-                          <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center">
-                            <MapPin className="w-10 h-10 text-blue-500" />
+                    <TableRow className="hover:bg-transparent border-none">
+                      <TableCell colSpan={4} className="py-16 text-center">
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30 text-muted-foreground">
+                            <MapPin className="h-8 w-8 text-primary" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-                              No divisions found
+                            <h3 className="text-base font-bold text-foreground">
+                              No Divisions Found
                             </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Add a new division to get started!
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {searchTerm
+                                ? "No divisions match your search filter."
+                                : "Get started by adding a new division."}
                             </p>
                           </div>
-                          <Button
-                            asChild
-                            className="mt-4 bg-blue-600 hover:bg-blue-700"
-                          >
-                            <AddDivisionModal />
-                          </Button>
+                          {!searchTerm && (
+                            <Button
+                              asChild
+                              className="mt-2 bg-primary font-bold text-primary-foreground hover:bg-primary/90"
+                            >
+                              <AddDivisionModal />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

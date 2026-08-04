@@ -43,7 +43,11 @@ export function RevenueChart() {
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                opacity={0.2}
+              />
               <XAxis
                 dataKey="name"
                 stroke="#888888"
