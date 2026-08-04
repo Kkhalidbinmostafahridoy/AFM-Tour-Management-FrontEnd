@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ITourPackage {
+  image: string;
+  photo: any;
+  name: string;
+  destination: any;
   _id: string;
   title: string;
   description: string;
