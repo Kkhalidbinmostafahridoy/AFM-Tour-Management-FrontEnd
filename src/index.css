@@ -1,5 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/* ── Premium global styles ───────────────────────────── */
+* {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Scale hover utility */
+.group-hover\:scale-115:is(.group:hover *) { transform: scale(1.15); }
+
+/* Glass card utility */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated glow */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(108, 99, 255, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(108, 99, 255, 0.65); }
+}
+.glow-anim { animation: glow-pulse 3s ease-in-out infinite; }
 
 @custom-variant dark (&:is(.dark *));
 
