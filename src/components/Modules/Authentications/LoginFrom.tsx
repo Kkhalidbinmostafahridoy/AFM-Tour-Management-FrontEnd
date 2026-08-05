@@ -14,6 +14,7 @@ import {
 import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/Auth/auth.api";
 import { toast } from "sonner";
+import config from "@/config";
 
 export function LoginForm({
   className,
@@ -127,15 +128,7 @@ export function LoginForm({
 
       {/* for google authentication */}
       <Button
-        onClick={() =>
-          window.open(
-            `${
-              import.meta.env.VITE_API_BASE_URL ||
-              "http://localhost:5000/api/v1"
-            }/auth/google`,
-            "_self"
-          )
-        }
+        onClick={() => window.open(`${config.baseUrl}/auth/google`, "_self")}
         type="button"
         variant="outline"
       >
