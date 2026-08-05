@@ -4,7 +4,7 @@ import config from "@/config";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: config.baseUrl || "http://localhost:5000/api/v1",
+    baseUrl: config.baseUrl,
     credentials: "include",
   }),
   tagTypes: [

@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
 import { useRegisterMutation } from "@/redux/features/Auth/auth.api";
 import { toast } from "sonner";
+import config from "@/config";
 import {
   Select,
   SelectContent,
@@ -208,15 +209,7 @@ export function RegistrationFrom({
           </span>
         </div>
         <Button
-          onClick={() =>
-            window.open(
-              `${
-                import.meta.env.VITE_API_BASE_URL ||
-                "http://localhost:5000/api/v1"
-              }/auth/google`,
-              "_self"
-            )
-          }
+          onClick={() => window.open(`${config.baseUrl}/auth/google`, "_self")}
           type="button"
           variant="outline"
         >
