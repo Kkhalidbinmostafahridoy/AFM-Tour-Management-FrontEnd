@@ -16,7 +16,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api/v1": {
-        target: "https://backend-ph-tour-management-system.vercel.app",
+        target: "https://backend-ph-tour-management-system-lake.vercel.app",
         changeOrigin: true,
       },
     },
