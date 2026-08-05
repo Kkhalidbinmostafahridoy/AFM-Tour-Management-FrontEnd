@@ -5,8 +5,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router";
 import { AnimatePresence } from "framer-motion";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout() {
   const location = useLocation();
@@ -25,7 +27,13 @@ export default function DashboardLayout() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 overflow-x-hidden">
           <AnimatePresence mode="wait">
-            <Outlet key={location.pathname} />
+            <Suspense fallback={
+              <div className="flex h-[50vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+              </div>
+            }>
+              <Outlet key={location.pathname} />
+            </Suspense>
           </AnimatePresence>
         </div>
       </SidebarInset>

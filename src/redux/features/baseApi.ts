@@ -7,6 +7,10 @@ export const baseApi = createApi({
     baseUrl: config.baseUrl || "http://localhost:5000/api/v1",
     credentials: "include",
   }),
-  tagTypes: ["TOUR", "AUTH", "USER", "DESTINATION", "SCHEDULE", "BOOKING", "WISHLIST", "HOTEL", "TRANSPORT", "GUIDE", "TICKET", "BLOG"],
+  tagTypes: [
+    "TOUR", "AUTH", "USER", "DESTINATION", "SCHEDULE", "BOOKING",
+    "WISHLIST", "HOTEL", "TRANSPORT", "GUIDE", "TICKET", "BLOG",
+    "BANNER", "COUPON", "FAQ", "NEWSLETTER",
+  ],
   endpoints: () => ({}),
 });
