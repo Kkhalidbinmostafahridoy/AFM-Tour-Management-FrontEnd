@@ -14,5 +14,11 @@ export default defineConfig({
   // port 3000 in ui from 5173
   server: {
     port: 3000,
+    proxy: {
+      "/api/v1": {
+        target: "https://backend-ph-tour-management-system.vercel.app",
+        changeOrigin: true,
+      },
+    },
   },
 });
