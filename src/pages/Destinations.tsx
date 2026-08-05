@@ -325,10 +325,11 @@ function Destinations() {
     pollingInterval: 0, // set to 30000 for live polling every 30s
   });
 
-  const destinations: Destination[] = useMemo(
-    () => apiResponse?.data ?? [],
-    [apiResponse],
-  );
+  const destinations: Destination[] = useMemo(() => {
+    if (Array.isArray(apiResponse)) return apiResponse;
+    if (apiResponse && Array.isArray((apiResponse as any).data)) return (apiResponse as any).data;
+    return [];
+  }, [apiResponse]);
 
   // Extract unique divisions
   const divisions = useMemo(() => {

@@ -8,20 +8,27 @@ export const withAuth = (Component: ComponentType, requiredRole?: TRole | TRole[
   return function AuthWrapper() {
     const { data, isLoading } = useUserInfoQuery(undefined);
 
-    if (!isLoading && !data?.data?.email) {
+    if (isLoading) {
+      return (
+        <div className="flex h-screen w-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        </div>
+      );
+    }
+
+    if (!data?.data?.email) {
       return <Navigate to="/login" />;
     }
 
-    if (requiredRole && !isLoading) {
+    if (requiredRole) {
       const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-      const userRole = data?.data?.role?.toUpperCase().replace(/_/g, "");
-      const normalizedAllowedRoles = allowedRoles.map((r: string) => r.toUpperCase().replace(/_/g, ""));
+      const userRole = data?.data?.role?.toUpperCase();
+      const normalizedAllowedRoles = allowedRoles.map((r: string) => r.toUpperCase());
       
-      if (!normalizedAllowedRoles.includes(userRole)) {
+      if (!userRole || !normalizedAllowedRoles.includes(userRole)) {
         return <Navigate to="/unAuthorize" />;
       }
     }
-    console.log("inside with Auth", data);
 
     return <Component />;
   };

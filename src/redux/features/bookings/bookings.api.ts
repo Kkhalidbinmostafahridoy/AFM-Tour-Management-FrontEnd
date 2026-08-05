@@ -42,6 +42,14 @@ export const bookingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["BOOKING"],
     }),
+    verifyPayment: builder.query({
+      query: (bookingId: string) => ({
+        url: `/booking/${bookingId}/verify-payment`,
+        method: "GET",
+      }),
+      providesTags: ["BOOKING"],
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -51,5 +59,6 @@ export const {
   useGetUserBookingsQuery,
   useGetSingleBookingQuery,
   useUpdateBookingStatusMutation,
+  useVerifyPaymentQuery,
 } = bookingApi;
 

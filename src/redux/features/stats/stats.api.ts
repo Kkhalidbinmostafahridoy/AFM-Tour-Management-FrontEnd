@@ -15,6 +15,7 @@ export const statsApi = baseApi.injectEndpoints({
         url: "/stats/payment",
         method: "GET",
       }),
+      providesTags: ["BOOKING"],
       transformResponse: (response) => response.data,
     }),
     getUserStats: builder.query({

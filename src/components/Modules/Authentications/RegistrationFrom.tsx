@@ -50,16 +50,7 @@ export function RegistrationFrom({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  // Define the expected shape of the register API response
-  type RegisterResponse = {
-    data?: {
-      email?: string;
-      [key: string]: any;
-    };
-    [key: string]: any;
-  };
-
-  const [register] = useRegisterMutation<RegisterResponse>();
+  const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -107,7 +98,7 @@ export function RegistrationFrom({
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
+             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -118,6 +109,7 @@ export function RegistrationFrom({
                       placeholder="Enter your username"
                       {...field}
                       value={field.value ?? ""}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormDescription className="sr-only">
@@ -139,6 +131,7 @@ export function RegistrationFrom({
                       type="email"
                       {...field}
                       value={field.value ?? ""}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormDescription className="sr-only">
@@ -155,7 +148,7 @@ export function RegistrationFrom({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password {...field} disabled={isLoading} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     This is your public display password.
@@ -171,7 +164,7 @@ export function RegistrationFrom({
                 <FormItem>
                   <FormLabel>confirmPassword</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password {...field} disabled={isLoading} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     This is your public display confirmPassword.
@@ -186,7 +179,7 @@ export function RegistrationFrom({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a role" />
@@ -203,7 +196,9 @@ export function RegistrationFrom({
                 </FormItem>
               )}
             />
-            <Button className="w-full">Submit</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit"}
+            </Button>
           </form>
         </Form>
 

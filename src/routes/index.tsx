@@ -13,6 +13,8 @@ import { withAuth } from "@/utils/withAuth";
 import { role } from "@/constants/role";
 import type { TRole } from "@/types/index.type";
 import Home from "@/pages/Home";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentFail from "@/pages/PaymentFail";
 
 import unAuthorize from "@/pages/UnAuthorize";
 import TourDetails from "@/pages/TourDetails";
@@ -53,6 +55,18 @@ export const router = createBrowserRouter([
       {
         path: "bookings/:id",
         Component: Bookings,
+      },
+      {
+        path: "payment/success",
+        Component: PaymentSuccess,
+      },
+      {
+        path: "payment/fail",
+        Component: PaymentFail,
+      },
+      {
+        path: "payment/cancel",
+        Component: PaymentFail,
       },
     ],
   },

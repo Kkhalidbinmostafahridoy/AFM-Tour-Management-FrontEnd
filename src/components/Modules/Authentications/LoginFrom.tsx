@@ -30,7 +30,7 @@ export function LoginForm({
     },
   });
 
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     console.log("Form submitted", data);
@@ -41,7 +41,21 @@ export function LoginForm({
 
       // Redirect after successful login
       toast.success("Login successful!");
-      navigate("/"); // Change to your actual dashboard route
+      
+      const responseData = result?.data as any;
+      const userRole = responseData?.role || responseData?.user?.role;
+      const normalizedRole = userRole?.toUpperCase();
+      
+      if (
+        normalizedRole === "SUPER_ADMIN" ||
+        normalizedRole === "ADMIN" ||
+        normalizedRole === "TOUR_MANAGER" ||
+        normalizedRole === "ACCOUNTANT"
+      ) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       console.log("Login error", error);
 
@@ -54,8 +68,9 @@ export function LoginForm({
         return;
       }
 
-      // Invalid credentials
-      toast.error("Invalid email or password.");
+      // Show backend error or fallback
+      const errorMessage = error?.data?.message || "Invalid email or password.";
+      toast.error(errorMessage);
     }
   };
 
@@ -77,7 +92,7 @@ export function LoginForm({
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@gmail.com" {...field} />
+                  <Input placeholder="example@gmail.com" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -91,15 +106,15 @@ export function LoginForm({
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
+                  <Input type="password" placeholder="********" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </Form>

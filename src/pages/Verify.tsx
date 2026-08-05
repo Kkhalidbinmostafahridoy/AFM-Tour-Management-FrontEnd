@@ -102,21 +102,17 @@ function Verify() {
   // Redirect if no email
   useEffect(() => {
     if (!email) {
-      navigate("/verify");
+      navigate("/register");
     }
-  });
+  }, [email, navigate]);
 
   useEffect(() => {
     if (!email || !confermed) {
-      console.log(
-        "Email or confirmation status is not set. Exiting timer setup."
-      );
       return;
     }
     const timerId = setInterval(() => {
       if (email && confermed) {
         setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-        console.log("Timer:", timer);
       }
     }, 1000);
     return () => clearInterval(timerId);

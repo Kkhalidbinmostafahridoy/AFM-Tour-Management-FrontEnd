@@ -9,12 +9,13 @@ import { baseApi } from "../baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation<IResponse<null>, IRegister>({
+    register: builder.mutation<IResponse<any>, IRegister>({
       query: (userInfo) => ({
         url: "/user/register",
         method: "POST",
         body: userInfo,
       }),
+      invalidatesTags: ["USER"],
     }),
     sendOtp: builder.mutation<IResponse<null>, ISendOtp>({
       query: (userInfo) => ({
@@ -30,12 +31,13 @@ export const authApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
-    login: builder.mutation<IResponse<null>, ILogin>({
+    login: builder.mutation<IResponse<any>, ILogin>({
       query: (userInfo) => ({
         url: "/auth/login",
         method: "POST",
         body: userInfo,
       }),
+      invalidatesTags: ["USER"],
     }),
     logout: builder.mutation({
       query: () => ({
