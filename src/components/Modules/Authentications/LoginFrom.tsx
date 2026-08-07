@@ -47,16 +47,15 @@ export function LoginForm({
       const userRole = responseData?.role || responseData?.user?.role;
       const normalizedRole = userRole?.toUpperCase();
       
-      if (
+      const destination = location.state?.from || (
         normalizedRole === "SUPER_ADMIN" ||
         normalizedRole === "ADMIN" ||
         normalizedRole === "TOUR_MANAGER" ||
         normalizedRole === "ACCOUNTANT"
-      ) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+          ? "/admin"
+          : "/"
+      );
+      navigate(destination);
     } catch (error: any) {
       console.log("Login error", error);
 

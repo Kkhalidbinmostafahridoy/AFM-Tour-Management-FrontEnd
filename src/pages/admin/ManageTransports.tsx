@@ -30,6 +30,35 @@ interface Transport {
 
 const emptyForm = { vehicleType: "", capacity: "", route: "", price: "", name: "", company: "", departureTime: "", arrivalTime: "" };
 
+const TransportForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => {
+  const field = (key: keyof typeof emptyForm, label: string, placeholder: string, type = "text", required = false) => (
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">{label}{required ? " *" : ""}</Label>
+      <Input type={type} value={formData[key]} onChange={(e) => setFormData((p: any) => ({ ...p, [key]: e.target.value }))}
+        className="bg-slate-800 border-slate-700 text-white" placeholder={placeholder} required={required} />
+    </div>
+  );
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        {field("vehicleType", "Vehicle Type", "e.g. Bus, Coach, Van", "text", true)}
+        {field("capacity", "Capacity (seats)", "e.g. 40", "number", true)}
+        <div className="col-span-2">{field("route", "Route", "e.g. Dhaka → Cox's Bazar", "text", true)}</div>
+        {field("price", "Price (BDT)", "e.g. 800", "number", true)}
+        {field("name", "Vehicle Name", "e.g. Express 101")}
+        {field("company", "Company", "e.g. Green Line")}
+        {field("departureTime", "Departure Time", "e.g. 08:00 AM")}
+        {field("arrivalTime", "Arrival Time", "e.g. 04:00 PM")}
+      </div>
+      <Button type="submit" disabled={isSubmitting}
+        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold">
+        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+        {title}
+      </Button>
+    </form>
+  );
+};
 export default function ManageTransports() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -119,33 +148,7 @@ export default function ManageTransports() {
     });
   };
 
-  const field = (key: keyof typeof formData, label: string, placeholder: string, type = "text", required = false) => (
-    <div className="space-y-1.5">
-      <Label className="text-slate-300 text-xs uppercase tracking-wider">{label}{required ? " *" : ""}</Label>
-      <Input type={type} value={formData[key]} onChange={(e) => setFormData((p) => ({ ...p, [key]: e.target.value }))}
-        className="bg-slate-800 border-slate-700 text-white" placeholder={placeholder} required={required} />
-    </div>
-  );
 
-  const TransportForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        {field("vehicleType", "Vehicle Type", "e.g. Bus, Coach, Van", "text", true)}
-        {field("capacity", "Capacity (seats)", "e.g. 40", "number", true)}
-        <div className="col-span-2">{field("route", "Route", "e.g. Dhaka → Cox's Bazar", "text", true)}</div>
-        {field("price", "Price (BDT)", "e.g. 800", "number", true)}
-        {field("name", "Vehicle Name", "e.g. Express 101")}
-        {field("company", "Company", "e.g. Green Line")}
-        {field("departureTime", "Departure Time", "e.g. 08:00 AM")}
-        {field("arrivalTime", "Arrival Time", "e.g. 04:00 PM")}
-      </div>
-      <Button type="submit" disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
-        {title}
-      </Button>
-    </form>
-  );
 
   return (
     <PageWrapper>
@@ -168,7 +171,7 @@ export default function ManageTransports() {
             </DialogTrigger>
             <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
               <DialogHeader><DialogTitle className="text-white">Add New Transport</DialogTitle></DialogHeader>
-              <TransportForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Transport" />
+              <TransportForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Transport" formData={formData} setFormData={setFormData} />
             </DialogContent>
           </Dialog>
         </motion.div>
@@ -216,7 +219,7 @@ export default function ManageTransports() {
                           </DialogTrigger>
                           <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
                             <DialogHeader><DialogTitle className="text-white">Edit Transport</DialogTitle></DialogHeader>
-                            <TransportForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Transport" />
+                            <TransportForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Transport" formData={formData} setFormData={setFormData} />
                           </DialogContent>
                         </Dialog>
                         <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id}

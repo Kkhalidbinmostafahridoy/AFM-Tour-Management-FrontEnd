@@ -15,14 +15,11 @@ export default function ManageNewsletter() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const { data: rawData, isLoading } = useGetAllNewslettersQuery(undefined, { refetchOnFocus: true });
+  const { data: rawData, isLoading, isError } = useGetAllNewslettersQuery(undefined, { refetchOnFocus: true });
   const [deleteNewsletter] = useDeleteNewsletterMutation();
 
-  const items: Subscriber[] = useMemo(() => {
-    if (Array.isArray(rawData)) return rawData;
-    if (rawData && Array.isArray((rawData as any).data)) return (rawData as any).data;
-    return [];
-  }, [rawData]);
+  // transformResponse already returns [] | Subscriber[], so rawData is always the final array
+  const items: Subscriber[] = Array.isArray(rawData) ? rawData : [];
 
   const filtered = useMemo(() =>
     items.filter((s) => s.email?.toLowerCase().includes(searchTerm.toLowerCase())),
@@ -66,9 +63,15 @@ export default function ManageNewsletter() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-          {isLoading ? (
+        {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3 text-slate-500">
+              <Mail className="w-10 h-10 opacity-30" />
+              <p className="font-medium text-red-400">Failed to load subscribers</p>
+              <p className="text-sm">Check your network or backend connection.</p>
             </div>
           ) : (
             <Table>

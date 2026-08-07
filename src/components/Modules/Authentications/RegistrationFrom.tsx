@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import {
   Form,
   FormControl,
@@ -53,6 +53,7 @@ export function RegistrationFrom({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const form = useForm({
     resolver: zodResolver(registerSchema),
@@ -77,9 +78,9 @@ export function RegistrationFrom({
       console.log(result);
       toast.success("User Created successful!");
       if (result.data && result.data.email) {
-        navigate("/verify", { state: { email: result.data.email } });
+        navigate("/verify", { state: { email: result.data.email, from: location.state?.from } });
       } else {
-        navigate("/verify", { state: { email: data.email } });
+        navigate("/verify", { state: { email: data.email, from: location.state?.from } });
       }
     } catch (error: any) {
       console.log(error);

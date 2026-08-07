@@ -8,6 +8,7 @@ export const statsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["BOOKING"],
+      keepUnusedDataFor: 300,
       transformResponse: (response) => response.data,
     }),
     getPaymentStats: builder.query({
@@ -16,6 +17,7 @@ export const statsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["BOOKING"],
+      keepUnusedDataFor: 300,
       transformResponse: (response) => response.data,
     }),
     getUserStats: builder.query({
@@ -24,6 +26,7 @@ export const statsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["USER"],
+      keepUnusedDataFor: 300,
       transformResponse: (response) => response.data,
     }),
     getTourStats: builder.query({
@@ -32,6 +35,7 @@ export const statsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["TOUR"],
+      keepUnusedDataFor: 300,
       transformResponse: (response) => response.data,
     }),
   }),

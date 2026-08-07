@@ -14,6 +14,43 @@ import { useGetAllFAQsQuery, useCreateFAQMutation, useUpdateFAQMutation, useDele
 
 interface FAQ { _id: string; question: string; answer: string; tour?: string; }
 const emptyForm = { question: "", answer: "", tour: "" };
+const OBJECT_ID_REGEX = /^[a-f0-9]{24}$/i;
+const isValidObjectId = (val: string) => !val || OBJECT_ID_REGEX.test(val);
+
+const FAQForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => {
+  const tourError = formData.tour && !isValidObjectId(formData.tour)
+    ? "Invalid Tour ID — must be a valid 24-character MongoDB ObjectId"
+    : null;
+  return (
+  <form onSubmit={(e) => { if (tourError) { e.preventDefault(); return; } onSubmit(e); }} className="space-y-4">
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Question *</Label>
+      <Input value={formData.question} onChange={(e) => setFormData((p: any) => ({ ...p, question: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. What is the cancellation policy?" required />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Answer *</Label>
+      <Textarea value={formData.answer} onChange={(e) => setFormData((p: any) => ({ ...p, answer: e.target.value }))} className="bg-slate-800 border-slate-700 text-white min-h-[100px]" placeholder="Detailed answer..." required />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Tour ID <span className="text-slate-500 normal-case">(optional — 24-char hex)</span></Label>
+      <Input
+        value={formData.tour}
+        onChange={(e) => setFormData((p: any) => ({ ...p, tour: e.target.value.trim() }))}
+        className={`bg-slate-800 border-slate-700 text-white font-mono text-sm ${tourError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+        placeholder="Leave blank for general FAQ"
+        maxLength={24}
+      />
+      {tourError && (
+        <p className="text-red-400 text-xs flex items-center gap-1 mt-1">
+          <span>⚠</span> {tourError}
+        </p>
+      )}
+    </div>
+    <Button type="submit" disabled={isSubmitting || !!tourError} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold disabled:opacity-50">
+      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
+    </Button>
+  </form>
+);};
 
 export default function ManageFAQs() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,25 +109,7 @@ export default function ManageFAQs() {
     setFormData({ question: item.question, answer: item.answer, tour: (item.tour as any)?._id || item.tour || "" });
   };
 
-  const FAQForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Question *</Label>
-        <Input value={formData.question} onChange={(e) => setFormData((p) => ({ ...p, question: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. What is the cancellation policy?" required />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Answer *</Label>
-        <Textarea value={formData.answer} onChange={(e) => setFormData((p) => ({ ...p, answer: e.target.value }))} className="bg-slate-800 border-slate-700 text-white min-h-[100px]" placeholder="Detailed answer..." required />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Tour ID (optional)</Label>
-        <Input value={formData.tour} onChange={(e) => setFormData((p) => ({ ...p, tour: e.target.value }))} className="bg-slate-800 border-slate-700 text-white font-mono text-sm" placeholder="Leave blank for general FAQ" />
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
-      </Button>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -102,7 +121,7 @@ export default function ManageFAQs() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild><Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white gap-2"><Plus className="w-4 h-4" /> Add FAQ</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create FAQ" /></DialogContent>
+            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create FAQ" formData={formData} setFormData={setFormData} /></DialogContent>
           </Dialog>
         </motion.div>
         <div className="relative mb-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" /><Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm" placeholder="Search questions..." /></div>
@@ -121,7 +140,7 @@ export default function ManageFAQs() {
                   <div className="flex items-center gap-2 ml-4 shrink-0">
                     <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
                       <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); openEdit(item); }} className="text-slate-400 hover:text-purple-400 hover:bg-purple-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update FAQ" /></DialogContent>
+                      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update FAQ" formData={formData} setFormData={setFormData} /></DialogContent>
                     </Dialog>
                     <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
                     <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${expandedId === item._id ? "rotate-180" : ""}`} />

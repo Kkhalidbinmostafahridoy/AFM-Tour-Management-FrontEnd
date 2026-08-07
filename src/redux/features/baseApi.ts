@@ -10,7 +10,7 @@ export const baseApi = createApi({
   tagTypes: [
     "TOUR", "AUTH", "USER", "DESTINATION", "SCHEDULE", "BOOKING",
     "WISHLIST", "HOTEL", "TRANSPORT", "GUIDE", "TICKET", "BLOG",
-    "BANNER", "COUPON", "FAQ", "NEWSLETTER",
+    "BANNER", "COUPON", "FAQ", "NEWSLETTER"
   ],
   endpoints: () => ({}),
 });

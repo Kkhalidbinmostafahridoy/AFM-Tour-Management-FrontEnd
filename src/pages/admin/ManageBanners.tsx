@@ -14,6 +14,37 @@ import { useGetAllBannersQuery, useCreateBannerMutation, useUpdateBannerMutation
 interface Banner { _id: string; title: string; image: string; link?: string; description?: string; isActive: boolean; }
 const emptyForm = { title: "", image: "", link: "", description: "", isActive: "true" };
 
+const BannerForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Title *</Label>
+      <Input value={formData.title} onChange={(e) => setFormData((p: any) => ({ ...p, title: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Banner title" required />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Image URL *</Label>
+      <Input value={formData.image} onChange={(e) => setFormData((p: any) => ({ ...p, image: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." required />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Link URL</Label>
+      <Input value={formData.link} onChange={(e) => setFormData((p: any) => ({ ...p, link: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Description</Label>
+      <Input value={formData.description} onChange={(e) => setFormData((p: any) => ({ ...p, description: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Short description..." />
+    </div>
+    <div className="flex items-center gap-3">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Active</Label>
+      <button type="button" onClick={() => setFormData((p: any) => ({ ...p, isActive: p.isActive === "true" ? "false" : "true" }))} className="text-slate-400 hover:text-emerald-400 transition-colors">
+        {formData.isActive === "true" ? <ToggleRight className="w-7 h-7 text-emerald-400" /> : <ToggleLeft className="w-7 h-7" />}
+      </button>
+      <span className={`text-sm ${formData.isActive === "true" ? "text-emerald-400" : "text-slate-500"}`}>{formData.isActive === "true" ? "Active" : "Inactive"}</span>
+    </div>
+    <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-semibold">
+      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
+    </Button>
+  </form>
+);
+
 export default function ManageBanners() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -63,36 +94,7 @@ export default function ManageBanners() {
     setFormData({ title: item.title, image: item.image, link: item.link || "", description: item.description || "", isActive: item.isActive ? "true" : "false" });
   };
 
-  const BannerForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Title *</Label>
-        <Input value={formData.title} onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Banner title" required />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Image URL *</Label>
-        <Input value={formData.image} onChange={(e) => setFormData((p) => ({ ...p, image: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." required />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Link URL</Label>
-        <Input value={formData.link} onChange={(e) => setFormData((p) => ({ ...p, link: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Description</Label>
-        <Input value={formData.description} onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Short description..." />
-      </div>
-      <div className="flex items-center gap-3">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Active</Label>
-        <button type="button" onClick={() => setFormData((p) => ({ ...p, isActive: p.isActive === "true" ? "false" : "true" }))} className="text-slate-400 hover:text-emerald-400 transition-colors">
-          {formData.isActive === "true" ? <ToggleRight className="w-7 h-7 text-emerald-400" /> : <ToggleLeft className="w-7 h-7" />}
-        </button>
-        <span className={`text-sm ${formData.isActive === "true" ? "text-emerald-400" : "text-slate-500"}`}>{formData.isActive === "true" ? "Active" : "Inactive"}</span>
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
-      </Button>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -104,7 +106,7 @@ export default function ManageBanners() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild><Button className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white gap-2"><Plus className="w-4 h-4" /> Add Banner</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Create Banner</DialogTitle></DialogHeader><BannerForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Banner" /></DialogContent>
+            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Create Banner</DialogTitle></DialogHeader><BannerForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Banner" formData={formData} setFormData={setFormData} /></DialogContent>
           </Dialog>
         </motion.div>
         <div className="relative mb-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" /><Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm" placeholder="Search banners..." /></div>
@@ -122,7 +124,7 @@ export default function ManageBanners() {
                       <TableCell className="text-right"><div className="flex items-center justify-end gap-2">
                         <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
                           <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="text-slate-400 hover:text-pink-400 hover:bg-pink-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Banner</DialogTitle></DialogHeader><BannerForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Banner" /></DialogContent>
+                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Banner</DialogTitle></DialogHeader><BannerForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Banner" formData={formData} setFormData={setFormData} /></DialogContent>
                         </Dialog>
                         <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
                       </div></TableCell>

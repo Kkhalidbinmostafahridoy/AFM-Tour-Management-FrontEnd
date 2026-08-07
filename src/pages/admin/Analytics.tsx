@@ -60,6 +60,35 @@ const extractArray = (dataResponse: any): any[] => {
   return [];
 };
 
+// Extracted to module scope to prevent tooltip remount on every parent render
+const AnalyticsTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{ background: 'rgba(17,17,34,0.97)', border: '1px solid rgba(232,130,42,0.3)', borderRadius: 12, padding: '12px 16px', backdropFilter: 'blur(16px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+        <p style={{ color: 'rgba(200,180,160,0.7)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: entry.color || entry.fill || '#e8822a' }} />
+            <span style={{ color: 'rgba(200,180,160,0.6)', textTransform: 'capitalize' }}>{entry.name}:</span>
+            <span style={{ fontWeight: 700, color: '#fff' }}>
+              {entry.name === 'revenue' ? `৳${Number(entry.value).toLocaleString()}` : entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Analytics() {
   // --- REAL REDUX API HOOKS ---
   const {
@@ -230,43 +259,7 @@ export default function Analytics() {
     },
   ];
 
-  // Custom Dark Tooltip Component for Charts
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: {
-    active?: boolean;
-    payload?: any[];
-    label?: string;
-  }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="rounded-xl border border-[#3a3a3a] bg-[#222222] p-4 shadow-2xl backdrop-blur-md">
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">
-            {label}
-          </p>
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center gap-2 text-sm">
-              <div
-                className="h-2.5 w-2.5 rounded-full"
-                style={{
-                  backgroundColor: entry.color || entry.fill || "#e8822a",
-                }}
-              />
-              <span className="capitalize text-gray-300">{entry.name}:</span>
-              <span className="font-bold text-white">
-                {entry.name === "revenue"
-                  ? `৳${Number(entry.value).toLocaleString()}`
-                  : entry.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // CustomTooltip is defined at module scope (above) as AnalyticsTooltip to prevent remount on every render
 
   if (isStatsLoading) {
     return (
@@ -516,7 +509,7 @@ export default function Analytics() {
                         vertical={false}
                         stroke="#2a2a2a"
                       />
-                      <RechartsTooltip content={<CustomTooltip />} />
+                      <RechartsTooltip content={<AnalyticsTooltip />} />
                       <Area
                         type="monotone"
                         dataKey="revenue"
@@ -548,7 +541,7 @@ export default function Analytics() {
                         vertical={false}
                         stroke="#2a2a2a"
                       />
-                      <RechartsTooltip content={<CustomTooltip />} />
+                      <RechartsTooltip content={<AnalyticsTooltip />} />
                       <Bar
                         dataKey="bookings"
                         fill="#e8822a"

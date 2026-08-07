@@ -33,6 +33,45 @@ interface Hotel {
 
 const emptyForm = { name: "", roomType: "", price: "", rating: "", location: "" };
 
+const HotelForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div className="grid grid-cols-2 gap-4">
+      <div className="col-span-2 space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Hotel Name *</Label>
+        <Input value={formData.name} onChange={(e) => setFormData((p: any) => ({ ...p, name: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Grand Palace Hotel" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Room Type *</Label>
+        <Input value={formData.roomType} onChange={(e) => setFormData((p: any) => ({ ...p, roomType: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Deluxe Suite" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Price / night ($) *</Label>
+        <Input type="number" value={formData.price} onChange={(e) => setFormData((p: any) => ({ ...p, price: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="120" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Rating (1–5)</Label>
+        <Input type="number" min={1} max={5} value={formData.rating} onChange={(e) => setFormData((p: any) => ({ ...p, rating: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="5" />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Location *</Label>
+        <Input value={formData.location} onChange={(e) => setFormData((p: any) => ({ ...p, location: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Cox's Bazar, Bangladesh" required />
+      </div>
+    </div>
+    <div className="flex gap-3 pt-2">
+      <Button type="submit" disabled={isSubmitting}
+        className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold">
+        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+        {title}
+      </Button>
+    </div>
+  </form>
+);
+
 export default function ManageHotels() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -120,44 +159,7 @@ export default function ManageHotels() {
     });
   };
 
-  const HotelForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2 space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Hotel Name *</Label>
-          <Input value={formData.name} onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Grand Palace Hotel" required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Room Type *</Label>
-          <Input value={formData.roomType} onChange={(e) => setFormData((p) => ({ ...p, roomType: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Deluxe Suite" required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Price / night ($) *</Label>
-          <Input type="number" value={formData.price} onChange={(e) => setFormData((p) => ({ ...p, price: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="120" required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Rating (1–5)</Label>
-          <Input type="number" min={1} max={5} value={formData.rating} onChange={(e) => setFormData((p) => ({ ...p, rating: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="5" />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Location *</Label>
-          <Input value={formData.location} onChange={(e) => setFormData((p) => ({ ...p, location: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Cox's Bazar, Bangladesh" required />
-        </div>
-      </div>
-      <div className="flex gap-3 pt-2">
-        <Button type="submit" disabled={isSubmitting}
-          className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold">
-          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
-          {title}
-        </Button>
-      </div>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -183,7 +185,7 @@ export default function ManageHotels() {
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2"><Building2 className="w-5 h-5 text-violet-400" /> Add New Hotel</DialogTitle>
               </DialogHeader>
-              <HotelForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Hotel" />
+              <HotelForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Hotel" formData={formData} setFormData={setFormData} />
             </DialogContent>
           </Dialog>
         </motion.div>
@@ -251,7 +253,7 @@ export default function ManageHotels() {
                               <DialogHeader>
                                 <DialogTitle className="text-white flex items-center gap-2"><Pencil className="w-5 h-5 text-violet-400" /> Edit Hotel</DialogTitle>
                               </DialogHeader>
-                              <HotelForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Hotel" />
+                              <HotelForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Hotel" formData={formData} setFormData={setFormData} />
                             </DialogContent>
                           </Dialog>
                           <Button size="sm" variant="ghost" onClick={() => handleDelete(hotel._id)} disabled={deletingId === hotel._id}

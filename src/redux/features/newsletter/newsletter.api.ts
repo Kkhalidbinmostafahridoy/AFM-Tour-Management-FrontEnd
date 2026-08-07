@@ -10,7 +10,7 @@ export const newsletterApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["NEWSLETTER" as any],
+      invalidatesTags: ["NEWSLETTER"],
     }),
     // GET /newsletter - get all (admin)
     getAllNewsletters: builder.query({
@@ -18,8 +18,13 @@ export const newsletterApi = baseApi.injectEndpoints({
         url: "/newsletter",
         method: "GET",
       }),
-      providesTags: ["NEWSLETTER" as any],
-      transformResponse: (response: any) => response.data,
+      providesTags: ["NEWSLETTER"],
+      transformResponse: (response: any) => {
+        // Handle both { data: [...] } and direct array
+        if (Array.isArray(response)) return response;
+        if (response?.data && Array.isArray(response.data)) return response.data;
+        return [];
+      },
     }),
     // DELETE /newsletter/:id - delete subscriber (admin)
     deleteNewsletter: builder.mutation({
@@ -27,7 +32,7 @@ export const newsletterApi = baseApi.injectEndpoints({
         url: `/newsletter/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["NEWSLETTER" as any],
+      invalidatesTags: ["NEWSLETTER"],
     }),
   }),
 });
