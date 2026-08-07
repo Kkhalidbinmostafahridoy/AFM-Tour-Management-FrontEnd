@@ -60,6 +60,10 @@ const itemIconMap: Record<string, React.ElementType> = {
   "My Profile": UserCircle,
   "Change Password": KeyRound,
   "Support Tickets": LifeBuoy,
+  "Overview": LayoutDashboard,
+  "Assigned Tours": Plane,
+  "Availability & Leaves": Ticket,
+  "Monthly Earnings": BarChart3,
 };
 
 // Mapping icons for groups based on their title

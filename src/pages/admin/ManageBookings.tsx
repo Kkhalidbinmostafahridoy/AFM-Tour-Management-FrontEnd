@@ -56,130 +56,142 @@ export default function ManageBookings() {
   };
 
   return (
-    <PageWrapper>
-      <div className="min-h-screen bg-slate-950 p-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-              <ClipboardList className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Manage Bookings</h1>
-              <p className="text-slate-400 text-sm">{bookings.length} total bookings</p>
-            </div>
+    <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-500 flex items-center justify-center shadow-inner">
+            <ClipboardList className="w-8 h-8" />
           </div>
-        </motion.div>
+          <div>
+            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
+              Manage Bookings
+            </h1>
+            <p className="text-[#9ca3af] mt-1 text-sm">{bookings.length} total bookings recorded</p>
+          </div>
+        </div>
+      </div>
 
-        {/* Filters */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }} className="flex items-center gap-3 mb-6 flex-wrap">
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
-              placeholder="Search by user, tour, or ID..." />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-500" />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="bg-slate-900 border-slate-700 text-white w-40">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
-                <SelectItem value="all" className="text-white hover:bg-slate-700">All Statuses</SelectItem>
-                {STATUSES.map((s) => <SelectItem key={s} value={s} className="text-white hover:bg-slate-700">{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-        </motion.div>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Input 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-11 bg-[#222222] border-[#2a2a2a] text-white pl-10 focus-visible:ring-indigo-500 shadow-lg"
+            placeholder="Search by user, tour, or ID..." 
+          />
+        </div>
+        <div className="flex bg-[#222222] border border-[#2a2a2a] rounded-xl p-1 shadow-lg">
+          {["all", ...STATUSES].map((s) => (
+             <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`px-4 py-2 text-xs font-bold uppercase rounded-lg transition-all ${
+                statusFilter === s
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : "text-gray-400 hover:text-white hover:bg-[#333333]"
+              }`}
+            >
+              {s === "all" ? "All Statuses" : s}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        {/* Table */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-blue-400" /></div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-800 hover:bg-transparent">
-                  <TableHead className="text-slate-400">Booking ID</TableHead>
-                  <TableHead className="text-slate-400">User</TableHead>
-                  <TableHead className="text-slate-400">Tour</TableHead>
-                  <TableHead className="text-slate-400">Guests</TableHead>
-                  <TableHead className="text-slate-400">Amount</TableHead>
-                  <TableHead className="text-slate-400">Status</TableHead>
-                  <TableHead className="text-slate-400 text-right">Actions</TableHead>
+      {/* Table */}
+      <div className="rounded-3xl border border-[#2a2a2a] bg-[#222222] shadow-2xl glass-panel overflow-hidden" data-cursor="card">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-indigo-400" /></div>
+        ) : (
+          <Table>
+            <TableHeader className="bg-[#1a1a1a]">
+              <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Booking ID</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">User</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Tour</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 text-center">Guests</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Amount</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Status</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 text-right pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-gray-500 py-12">
+                    {searchTerm || statusFilter !== "all" ? "No bookings match filters" : "No bookings yet."}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center text-slate-500 py-12">
-                      {searchTerm || statusFilter !== "all" ? "No bookings match filters" : "No bookings yet."}
-                    </TableCell>
-                  </TableRow>
-                ) : filtered.map((booking) => (
-                  <TableRow key={booking._id} className="border-slate-800 hover:bg-slate-800/50">
-                    <TableCell className="font-mono text-xs text-slate-400">{booking._id?.slice(-8)}</TableCell>
-                    <TableCell>
-                      <div className="text-white text-sm font-medium">{booking.user?.name || "—"}</div>
-                      <div className="text-slate-500 text-xs">{booking.user?.email || "—"}</div>
-                    </TableCell>
-                    <TableCell className="text-slate-300 max-w-[150px] truncate">{booking.tour?.title || "—"}</TableCell>
-                    <TableCell className="text-slate-300 text-center">{booking.guestCount}</TableCell>
-                    <TableCell className="text-emerald-400 font-semibold">৳{booking.payment?.amount || "—"}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_COLORS[booking.status] || "bg-slate-700 text-slate-400 border-slate-600"}`}>
-                        {booking.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {/* View Details */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="ghost" onClick={() => setViewingBooking(booking)} className="text-slate-400 hover:text-blue-400 hover:bg-blue-400/10">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
-                            <DialogHeader><DialogTitle className="text-white">Booking Details</DialogTitle></DialogHeader>
-                            {viewingBooking && (
-                              <div className="space-y-3 text-sm">
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Booking ID</div><div className="font-mono text-white text-xs">{viewingBooking._id}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Status</div><span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_COLORS[viewingBooking.status] || ""}`}>{viewingBooking.status}</span></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Customer</div><div className="text-white">{viewingBooking.user?.name}</div><div className="text-slate-400 text-xs">{viewingBooking.user?.email}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Tour</div><div className="text-white">{viewingBooking.tour?.title || "—"}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Guests</div><div className="text-white">{viewingBooking.guestCount}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Amount Paid</div><div className="text-emerald-400 font-semibold">৳{viewingBooking.payment?.amount || "—"}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Payment Status</div><div className="text-white">{viewingBooking.payment?.status || "—"}</div></div>
-                                  <div className="bg-slate-800 rounded-xl p-3"><div className="text-slate-400 text-xs mb-1">Transaction ID</div><div className="font-mono text-white text-xs">{viewingBooking.payment?.transactionId || "—"}</div></div>
-                                </div>
-                                <div className="space-y-1.5 pt-2">
-                                  <div className="text-slate-400 text-xs uppercase tracking-wider">Update Status</div>
-                                  <div className="flex flex-wrap gap-2">
-                                    {STATUSES.map((s) => (
-                                      <Button key={s} size="sm" disabled={isUpdating || viewingBooking.status === s}
-                                        onClick={() => handleStatusUpdate(viewingBooking._id, s)}
-                                        className={`text-xs ${viewingBooking.status === s ? "opacity-50 cursor-not-allowed" : ""} bg-slate-800 hover:bg-slate-700 text-white border border-slate-700`}>
-                                        {s}
-                                      </Button>
-                                    ))}
-                                  </div>
-                                </div>
+              ) : filtered.map((booking) => (
+                <TableRow key={booking._id} className="border-[#2a2a2a] hover:bg-[#2a2a2a]/50 transition-colors">
+                  <TableCell className="font-mono text-xs text-indigo-400 pl-4">{booking._id?.slice(-8)}</TableCell>
+                  <TableCell>
+                    <div className="text-white text-sm font-bold">{booking.user?.name || "—"}</div>
+                    <div className="text-gray-500 text-[10px] font-mono mt-0.5">{booking.user?.email || "—"}</div>
+                  </TableCell>
+                  <TableCell className="text-gray-300 max-w-[150px] truncate font-medium">{booking.tour?.title || "—"}</TableCell>
+                  <TableCell className="text-gray-300 text-center font-bold">{booking.guestCount}</TableCell>
+                  <TableCell className="text-emerald-400 font-bold">৳{booking.payment?.amount?.toLocaleString() || "—"}</TableCell>
+                  <TableCell>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${STATUS_COLORS[booking.status] || "bg-gray-800 text-gray-400 border-gray-700"}`}>
+                      {booking.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right pr-4">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="icon" variant="ghost" onClick={() => setViewingBooking(booking)} className="w-8 h-8 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+                        <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Booking Details</DialogTitle></DialogHeader>
+                        {viewingBooking && (
+                          <div className="space-y-4 text-sm mt-4">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Booking ID</div><div className="font-mono text-indigo-400 text-xs">{viewingBooking._id}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Status</div><span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border inline-block mt-1 ${STATUS_COLORS[viewingBooking.status] || ""}`}>{viewingBooking.status}</span></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Customer</div><div className="text-white font-bold">{viewingBooking.user?.name}</div><div className="text-gray-500 font-mono text-[10px] mt-0.5">{viewingBooking.user?.email}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Tour</div><div className="text-white font-medium">{viewingBooking.tour?.title || "—"}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Guests</div><div className="text-white font-bold">{viewingBooking.guestCount}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Amount Paid</div><div className="text-emerald-400 font-bold">৳{viewingBooking.payment?.amount?.toLocaleString() || "—"}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Payment Status</div><div className="text-white font-bold">{viewingBooking.payment?.status || "—"}</div></div>
+                              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3"><div className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Transaction ID</div><div className="font-mono text-indigo-400 text-xs">{viewingBooking.payment?.transactionId || "—"}</div></div>
+                            </div>
+                            <div className="space-y-2 pt-4 border-t border-[#3a3a3a]">
+                              <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Update Status</div>
+                              <div className="flex flex-wrap gap-2">
+                                {STATUSES.map((s) => (
+                                  <Button key={s} size="sm" disabled={isUpdating || viewingBooking.status === s}
+                                    onClick={() => handleStatusUpdate(viewingBooking._id, s)}
+                                    className={`text-[10px] font-black tracking-widest uppercase transition-all ${viewingBooking.status === s ? "opacity-50 cursor-not-allowed bg-[#3a3a3a] text-gray-500" : "bg-[#1a1a1a] hover:bg-[#2a2a2a] text-gray-300 border border-[#3a3a3a] hover:border-indigo-500"}`}>
+                                    {s}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                            {(viewingBooking.status === "COMPLETE" || viewingBooking.status === "CONFIRMED") && (
+                              <div className="pt-2">
+                                <Button onClick={() => {
+                                  toast.success("Generating Invoice...");
+                                  setTimeout(() => window.print(), 500);
+                                }} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold h-11 shadow-lg shadow-indigo-500/20">
+                                  Generate Invoice
+                                </Button>
                               </div>
                             )}
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+                          </div>
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </PageWrapper>
   );

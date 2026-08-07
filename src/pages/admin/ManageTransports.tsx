@@ -151,89 +151,88 @@ export default function ManageTransports() {
 
 
   return (
-    <PageWrapper>
-      <div className="min-h-screen bg-slate-950 p-6">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <Bus className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Manage Transports</h1>
-              <p className="text-slate-400 text-sm">{items.length} transport records</p>
-            </div>
+    <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-500 flex items-center justify-center shadow-inner">
+            <Bus className="w-8 h-8" />
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white gap-2">
-                <Plus className="w-4 h-4" /> Add Transport
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
-              <DialogHeader><DialogTitle className="text-white">Add New Transport</DialogTitle></DialogHeader>
-              <TransportForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Transport" formData={formData} setFormData={setFormData} />
-            </DialogContent>
-          </Dialog>
-        </motion.div>
-
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm"
-            placeholder="Search by type or route..." />
+          <div>
+            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Manage Transports</h1>
+            <p className="text-[#9ca3af] mt-1 text-sm">{items.length} transport records</p>
+          </div>
         </div>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold h-12 px-6 shadow-lg shadow-cyan-500/20 gap-2">
+              <Plus className="w-5 h-5" /> Add Transport
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+            <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Add New Transport</DialogTitle></DialogHeader>
+            <TransportForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Transport" formData={formData} setFormData={setFormData} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-cyan-400" /></div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-800 hover:bg-transparent">
-                  <TableHead className="text-slate-400">Vehicle Type</TableHead>
-                  <TableHead className="text-slate-400">Route</TableHead>
-                  <TableHead className="text-slate-400">Capacity</TableHead>
-                  <TableHead className="text-slate-400">Price</TableHead>
-                  <TableHead className="text-slate-400">Schedule</TableHead>
-                  <TableHead className="text-slate-400 text-right">Actions</TableHead>
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+          className="h-11 bg-[#222222] border-[#2a2a2a] text-white pl-10 focus-visible:ring-cyan-500 shadow-lg"
+          placeholder="Search by type or route..." />
+      </div>
+
+      {/* Table */}
+      <div className="rounded-3xl border border-[#2a2a2a] bg-[#222222] shadow-2xl glass-panel overflow-hidden" data-cursor="card">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-cyan-400" /></div>
+        ) : (
+          <Table>
+            <TableHeader className="bg-[#1a1a1a]">
+              <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 pl-6">Vehicle Type</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Route</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Capacity</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Price</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Schedule</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 text-right pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-gray-500 py-12">
+                  {searchTerm ? "No transports match your search" : "No transports yet. Add the first one!"}
+                </TableCell></TableRow>
+              ) : filtered.map((item) => (
+                <TableRow key={item._id} className="border-[#2a2a2a] hover:bg-[#2a2a2a]/50 transition-colors">
+                  <TableCell className="font-bold text-white pl-6">{item.vehicleType}</TableCell>
+                  <TableCell className="text-gray-300 font-medium text-xs"><span className="flex items-center gap-1"><Route className="w-3.5 h-3.5 text-gray-500" />{item.route}</span></TableCell>
+                  <TableCell className="text-gray-300 font-medium"><span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-500" />{item.capacity}</span></TableCell>
+                  <TableCell className="text-emerald-400 font-bold"><span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />{item.price}</span></TableCell>
+                  <TableCell className="text-gray-400 text-xs font-mono">{item.departureTime && item.arrivalTime ? `${item.departureTime} → ${item.arrivalTime}` : "—"}</TableCell>
+                  <TableCell className="text-right pr-6">
+                    <div className="flex items-center justify-end gap-2">
+                      <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
+                        <DialogTrigger asChild>
+                          <Button size="icon" variant="ghost" onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10"><Pencil className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+                          <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Edit Transport</DialogTitle></DialogHeader>
+                          <TransportForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Transport" formData={formData} setFormData={setFormData} />
+                        </DialogContent>
+                      </Dialog>
+                      <Button size="icon" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10">
+                        {deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center text-slate-500 py-12">
-                    {searchTerm ? "No transports match your search" : "No transports yet. Add the first one!"}
-                  </TableCell></TableRow>
-                ) : filtered.map((item) => (
-                  <TableRow key={item._id} className="border-slate-800 hover:bg-slate-800/50">
-                    <TableCell className="font-medium text-white">{item.vehicleType}</TableCell>
-                    <TableCell className="text-slate-300"><span className="flex items-center gap-1"><Route className="w-3.5 h-3.5 text-slate-500" />{item.route}</span></TableCell>
-                    <TableCell className="text-slate-300"><span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-slate-500" />{item.capacity}</span></TableCell>
-                    <TableCell className="text-emerald-400 font-semibold"><span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />{item.price}</span></TableCell>
-                    <TableCell className="text-slate-400 text-xs">{item.departureTime && item.arrivalTime ? `${item.departureTime} → ${item.arrivalTime}` : "—"}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10"><Pencil className="w-4 h-4" /></Button>
-                          </DialogTrigger>
-                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
-                            <DialogHeader><DialogTitle className="text-white">Edit Transport</DialogTitle></DialogHeader>
-                            <TransportForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Transport" formData={formData} setFormData={setFormData} />
-                          </DialogContent>
-                        </Dialog>
-                        <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id}
-                          className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">
-                          {deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </PageWrapper>
   );

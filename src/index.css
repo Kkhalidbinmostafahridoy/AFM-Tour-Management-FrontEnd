@@ -39,6 +39,37 @@ html { scroll-behavior: smooth; }
 }
 .glow-anim { animation: glow-pulse 3s ease-in-out infinite; }
 
+/* 3D Visual Experiences & Premium Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hover-3d-tilt {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+.hover-3d-tilt:hover {
+  transform: translateY(-5px) scale(1.02) perspective(1000px) rotateX(2deg) rotateY(-2deg);
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2), 0 0 20px rgba(59,130,246,0.1);
+}
+
+.float-anim {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

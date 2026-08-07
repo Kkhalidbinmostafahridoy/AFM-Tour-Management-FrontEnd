@@ -7,6 +7,7 @@ import { ThemeProvider } from "./providers/Dark.Theme.Provider";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "./redux/features/store";
 import { Toaster } from "./components/ui/sonner";
+import { CustomCursor } from "./components/ui/CustomCursor";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,6 +15,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
         <Toaster richColors />
+        <CustomCursor />
       </ThemeProvider>
     </ReduxProvider>
   </StrictMode>

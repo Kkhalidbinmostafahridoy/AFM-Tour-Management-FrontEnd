@@ -4,7 +4,6 @@ import { generateRoutes } from "./utils/generateRourtes";
 import { adminSideBarItems } from "./routes/adminSideBarItems";
 
 function App() {
-  console.log(generateRoutes(adminSideBarItems));
   return (
     <>
       <CommonLayout>
