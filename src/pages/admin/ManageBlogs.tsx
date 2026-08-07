@@ -26,6 +26,49 @@ interface Blog {
 const CATEGORIES = ["Travel Tips", "News", "Guides", "Events"];
 const emptyForm = { title: "", category: "", content: "", image: "", author: "" };
 
+const BlogForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Title *</Label>
+      <Input value={formData.title} onChange={(e) => setFormData((p: any) => ({ ...p, title: e.target.value }))}
+        className="bg-slate-800 border-slate-700 text-white" placeholder="Blog title..." required />
+    </div>
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Category *</Label>
+        <Select value={formData.category} onValueChange={(v) => setFormData((p: any) => ({ ...p, category: v }))}>
+          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-800 border-slate-700">
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="text-white hover:bg-slate-700">{c}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Author *</Label>
+        <Input value={formData.author} onChange={(e) => setFormData((p: any) => ({ ...p, author: e.target.value }))}
+          className="bg-slate-800 border-slate-700 text-white" placeholder="Author name" required />
+      </div>
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Image URL</Label>
+      <Input value={formData.image} onChange={(e) => setFormData((p: any) => ({ ...p, image: e.target.value }))}
+        className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Content *</Label>
+      <Textarea value={formData.content} onChange={(e) => setFormData((p: any) => ({ ...p, content: e.target.value }))}
+        className="bg-slate-800 border-slate-700 text-white min-h-[100px]" placeholder="Blog content..." required />
+    </div>
+    <Button type="submit" disabled={isSubmitting || !formData.category}
+      className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold">
+      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+      {title}
+    </Button>
+  </form>
+);
+
 export default function ManageBlogs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -95,48 +138,7 @@ export default function ManageBlogs() {
     setFormData({ title: item.title, category: item.category, content: item.content, image: item.image || "", author: item.author });
   };
 
-  const BlogForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Title *</Label>
-        <Input value={formData.title} onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))}
-          className="bg-slate-800 border-slate-700 text-white" placeholder="Blog title..." required />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Category *</Label>
-          <Select value={formData.category} onValueChange={(v) => setFormData((p) => ({ ...p, category: v }))}>
-            <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
-              {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="text-white hover:bg-slate-700">{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Author *</Label>
-          <Input value={formData.author} onChange={(e) => setFormData((p) => ({ ...p, author: e.target.value }))}
-            className="bg-slate-800 border-slate-700 text-white" placeholder="Author name" required />
-        </div>
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Image URL</Label>
-        <Input value={formData.image} onChange={(e) => setFormData((p) => ({ ...p, image: e.target.value }))}
-          className="bg-slate-800 border-slate-700 text-white" placeholder="https://..." />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Content *</Label>
-        <Textarea value={formData.content} onChange={(e) => setFormData((p) => ({ ...p, content: e.target.value }))}
-          className="bg-slate-800 border-slate-700 text-white min-h-[100px]" placeholder="Blog content..." required />
-      </div>
-      <Button type="submit" disabled={isSubmitting || !formData.category}
-        className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
-        {title}
-      </Button>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -159,7 +161,7 @@ export default function ManageBlogs() {
             </DialogTrigger>
             <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
               <DialogHeader><DialogTitle className="text-white">Create Blog Post</DialogTitle></DialogHeader>
-              <BlogForm onSubmit={handleCreate} isSubmitting={isCreating} title="Publish Blog" />
+              <BlogForm onSubmit={handleCreate} isSubmitting={isCreating} title="Publish Blog" formData={formData} setFormData={setFormData} />
             </DialogContent>
           </Dialog>
         </motion.div>
@@ -205,7 +207,7 @@ export default function ManageBlogs() {
                           </DialogTrigger>
                           <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
                             <DialogHeader><DialogTitle className="text-white">Edit Blog Post</DialogTitle></DialogHeader>
-                            <BlogForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Blog" />
+                            <BlogForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Blog" formData={formData} setFormData={setFormData} />
                           </DialogContent>
                         </Dialog>
                         <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id}

@@ -15,6 +15,42 @@ import { useGetAllCouponsQuery, useCreateCouponMutation, useUpdateCouponMutation
 interface Coupon { _id: string; code: string; type: "percentage" | "fixed"; value: number; expiryDate: string; usageLimit?: number; usedCount: number; }
 const emptyForm = { code: "", type: "percentage", value: "", expiryDate: "", usageLimit: "" };
 
+const CouponForm = ({ onSubmit, isSubmitting, title, formData, setFormData }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string; formData: any; setFormData: React.Dispatch<React.SetStateAction<any>> }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div className="grid grid-cols-2 gap-4">
+      <div className="col-span-2 space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Coupon Code *</Label>
+        <Input value={formData.code} onChange={(e) => setFormData((p: any) => ({ ...p, code: e.target.value.toUpperCase() }))} className="bg-slate-800 border-slate-700 text-white font-mono tracking-widest" placeholder="SUMMER2025" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Type *</Label>
+        <Select value={formData.type} onValueChange={(v) => setFormData((p: any) => ({ ...p, type: v }))}>
+          <SelectTrigger className="bg-slate-800 border-slate-700 text-white"><SelectValue /></SelectTrigger>
+          <SelectContent className="bg-slate-800 border-slate-700">
+            <SelectItem value="percentage" className="text-white hover:bg-slate-700">Percentage (%)</SelectItem>
+            <SelectItem value="fixed" className="text-white hover:bg-slate-700">Fixed Amount (BDT)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Value *</Label>
+        <Input type="number" value={formData.value} onChange={(e) => setFormData((p: any) => ({ ...p, value: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder={formData.type === "percentage" ? "10 (for 10%)" : "500"} required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Expiry Date *</Label>
+        <Input type="date" value={formData.expiryDate} onChange={(e) => setFormData((p: any) => ({ ...p, expiryDate: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-slate-300 text-xs uppercase tracking-wider">Usage Limit</Label>
+        <Input type="number" value={formData.usageLimit} onChange={(e) => setFormData((p: any) => ({ ...p, usageLimit: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Leave blank for unlimited" />
+      </div>
+    </div>
+    <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold">
+      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
+    </Button>
+  </form>
+);
+
 export default function ManageCoupons() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -73,41 +109,7 @@ export default function ManageCoupons() {
 
   const isExpired = (date: string) => new Date(date) < new Date();
 
-  const CouponForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2 space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Coupon Code *</Label>
-          <Input value={formData.code} onChange={(e) => setFormData((p) => ({ ...p, code: e.target.value.toUpperCase() }))} className="bg-slate-800 border-slate-700 text-white font-mono tracking-widest" placeholder="SUMMER2025" required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Type *</Label>
-          <Select value={formData.type} onValueChange={(v) => setFormData((p) => ({ ...p, type: v }))}>
-            <SelectTrigger className="bg-slate-800 border-slate-700 text-white"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
-              <SelectItem value="percentage" className="text-white hover:bg-slate-700">Percentage (%)</SelectItem>
-              <SelectItem value="fixed" className="text-white hover:bg-slate-700">Fixed Amount (BDT)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Value *</Label>
-          <Input type="number" value={formData.value} onChange={(e) => setFormData((p) => ({ ...p, value: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder={formData.type === "percentage" ? "10 (for 10%)" : "500"} required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Expiry Date *</Label>
-          <Input type="date" value={formData.expiryDate} onChange={(e) => setFormData((p) => ({ ...p, expiryDate: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" required />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-slate-300 text-xs uppercase tracking-wider">Usage Limit</Label>
-          <Input type="number" value={formData.usageLimit} onChange={(e) => setFormData((p) => ({ ...p, usageLimit: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="Leave blank for unlimited" />
-        </div>
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
-      </Button>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -119,7 +121,7 @@ export default function ManageCoupons() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild><Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white gap-2"><Plus className="w-4 h-4" /> Create Coupon</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Create Coupon</DialogTitle></DialogHeader><CouponForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Coupon" /></DialogContent>
+            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Create Coupon</DialogTitle></DialogHeader><CouponForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Coupon" formData={formData} setFormData={setFormData} /></DialogContent>
           </Dialog>
         </motion.div>
         <div className="relative mb-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" /><Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm" placeholder="Search by code..." /></div>
@@ -139,7 +141,7 @@ export default function ManageCoupons() {
                       <TableCell className="text-right"><div className="flex items-center justify-end gap-2">
                         <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
                           <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Coupon</DialogTitle></DialogHeader><CouponForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Coupon" /></DialogContent>
+                          <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Coupon</DialogTitle></DialogHeader><CouponForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Coupon" formData={formData} setFormData={setFormData} /></DialogContent>
                         </Dialog>
                         <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
                       </div></TableCell>

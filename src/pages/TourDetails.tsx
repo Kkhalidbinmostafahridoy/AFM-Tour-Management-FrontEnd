@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useGetAllTourQuery } from "@/redux/features/Tour/tour.api";
 import { useGetSchedulesByTourQuery } from "@/redux/features/schedule/schedule.api";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/redux/features/wishlist/wishlist.api";
+import { useUserInfoQuery } from "@/redux/features/Auth/auth.api";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +32,8 @@ function TourDetails() {
 
   const { data: tourDataArray, isLoading, isError } = useGetAllTourQuery({ _id: id });
   const { data: schedules } = useGetSchedulesByTourQuery(id || "", { skip: !id });
+  const { data: userInfo } = useUserInfoQuery(undefined);
+  const isAuthenticated = !!userInfo?.data?.email;
 
   const { data: wishlistData } = useGetWishlistQuery(undefined);
   const [toggleWishlist] = useToggleWishlistMutation();
@@ -479,7 +482,9 @@ function TourDetails() {
                     border: "none",
                   }}
                 >
-                  <Link to={`/bookings/${tourData._id}`}>Book This Tour</Link>
+                  <Link to={isAuthenticated ? `/bookings/${tourData._id}` : "/login"} state={{ from: `/bookings/${tourData._id}` }}>
+                    Book This Tour
+                  </Link>
                 </Button>
                 <Button
                   onClick={handleToggleWishlist}

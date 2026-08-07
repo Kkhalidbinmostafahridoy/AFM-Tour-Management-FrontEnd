@@ -16,6 +16,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface Destination { _id: string; name: string; district?: any; }
 interface Division { _id: string; name: string; }
 
+const DestForm = ({ 
+  onSubmit, 
+  isSubmitting, 
+  title, 
+  formData, 
+  setFormData, 
+  divisions, 
+  divLoading 
+}: { 
+  onSubmit: (e: React.FormEvent) => void; 
+  isSubmitting: boolean; 
+  title: string;
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  divisions: any[];
+  divLoading: boolean;
+}) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Destination Name *</Label>
+      <Input value={formData.name} onChange={(e) => setFormData((p: any) => ({ ...p, name: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Cox's Bazar" required />
+    </div>
+    <div className="space-y-1.5">
+      <Label className="text-slate-300 text-xs uppercase tracking-wider">Division</Label>
+      <Select value={formData.division} onValueChange={(v) => setFormData((p: any) => ({ ...p, division: v, district: "" }))} disabled={divLoading}>
+        <SelectTrigger className="bg-slate-800 border-slate-700 text-white"><SelectValue placeholder="Select division (optional)" /></SelectTrigger>
+        <SelectContent className="bg-slate-800 border-slate-700">
+          {(Array.isArray(divisions) ? divisions : []).map((d: Division) => (
+            <SelectItem key={d._id} value={d._id} className="text-white hover:bg-slate-700">{d.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+    <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold">
+      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
+    </Button>
+  </form>
+);
+
 export default function ManageDestinations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -74,28 +113,7 @@ export default function ManageDestinations() {
     setFormData({ name: item.name, district: item.district?._id || item.district || "", division: "" });
   };
 
-  const DestForm = ({ onSubmit, isSubmitting, title }: { onSubmit: (e: React.FormEvent) => void; isSubmitting: boolean; title: string }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Destination Name *</Label>
-        <Input value={formData.name} onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))} className="bg-slate-800 border-slate-700 text-white" placeholder="e.g. Cox's Bazar" required />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-slate-300 text-xs uppercase tracking-wider">Division</Label>
-        <Select value={formData.division} onValueChange={(v) => setFormData((p) => ({ ...p, division: v, district: "" }))} disabled={divLoading}>
-          <SelectTrigger className="bg-slate-800 border-slate-700 text-white"><SelectValue placeholder="Select division (optional)" /></SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
-            {(Array.isArray(divisions) ? divisions : []).map((d: Division) => (
-              <SelectItem key={d._id} value={d._id} className="text-white hover:bg-slate-700">{d.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold">
-        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}{title}
-      </Button>
-    </form>
-  );
+
 
   return (
     <PageWrapper>
@@ -107,7 +125,7 @@ export default function ManageDestinations() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild><Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2"><Plus className="w-4 h-4" /> Add Destination</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Destination" /></DialogContent>
+            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} /></DialogContent>
           </Dialog>
         </motion.div>
 
@@ -127,7 +145,7 @@ export default function ManageDestinations() {
                     <TableCell className="text-right"><div className="flex items-center justify-end gap-2">
                       <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
                         <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="text-slate-400 hover:text-green-400 hover:bg-green-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Destination" /></DialogContent>
+                        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} /></DialogContent>
                       </Dialog>
                       <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
                     </div></TableCell>
