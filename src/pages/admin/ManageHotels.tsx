@@ -162,113 +162,119 @@ export default function ManageHotels() {
 
 
   return (
-    <PageWrapper>
-      <div className="min-h-screen bg-slate-950 p-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg">
-              <Building2 className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Manage Hotels</h1>
-              <p className="text-slate-400 text-sm">{hotels.length} hotels in database</p>
-            </div>
+    <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/30 text-violet-500 flex items-center justify-center shadow-inner">
+            <Building2 className="w-8 h-8" />
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white gap-2">
-                <Plus className="w-4 h-4" /> Add Hotel
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2"><Building2 className="w-5 h-5 text-violet-400" /> Add New Hotel</DialogTitle>
-              </DialogHeader>
-              <HotelForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Hotel" formData={formData} setFormData={setFormData} />
-            </DialogContent>
-          </Dialog>
-        </motion.div>
+          <div>
+            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">
+              Manage Hotels
+            </h1>
+            <p className="text-[#9ca3af] mt-1 text-sm">{hotels.length} hotels in database</p>
+          </div>
+        </div>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold h-12 px-6 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 gap-2">
+              <Plus className="w-5 h-5" /> Add Hotel
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500 flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-violet-400" /> Add New Hotel
+              </DialogTitle>
+            </DialogHeader>
+            <HotelForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Hotel" formData={formData} setFormData={setFormData} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        {/* Search */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm"
-            placeholder="Search by name or location..." />
-        </motion.div>
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Input 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="h-11 bg-[#222222] border-[#2a2a2a] text-white pl-10 focus-visible:ring-violet-500 shadow-lg"
+          placeholder="Search by name or location..." 
+        />
+      </div>
 
-        {/* Table */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-800 hover:bg-transparent">
-                  <TableHead className="text-slate-400 font-medium">Hotel Name</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Room Type</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Price</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Rating</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Location</TableHead>
-                  <TableHead className="text-slate-400 font-medium text-right">Actions</TableHead>
+      {/* Table */}
+      <div className="rounded-3xl border border-[#2a2a2a] bg-[#222222] shadow-2xl glass-panel overflow-hidden" data-cursor="card">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader className="bg-[#1a1a1a]">
+              <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 pl-6">Hotel Name</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Room Type</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Price</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Rating</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">Location</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 text-right pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-gray-500 py-12">
+                    {searchTerm ? "No hotels match your search" : "No hotels yet. Add your first hotel!"}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-slate-500 py-12">
-                      {searchTerm ? "No hotels match your search" : "No hotels yet. Add your first hotel!"}
+              ) : (
+                filtered.map((hotel) => (
+                  <TableRow key={hotel._id} className="border-[#2a2a2a] hover:bg-[#2a2a2a]/50 transition-colors">
+                    <TableCell className="font-bold text-white pl-6">{hotel.name}</TableCell>
+                    <TableCell className="text-gray-300 font-medium">{hotel.roomType}</TableCell>
+                    <TableCell className="text-emerald-400 font-bold">
+                      <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />{hotel.price}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="flex items-center gap-1 text-amber-400 font-bold bg-amber-400/10 px-2.5 py-0.5 rounded-full w-max border border-amber-400/20">
+                        <Star className="w-3.5 h-3.5 fill-amber-400" />{hotel.rating}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-gray-400 font-medium text-xs">
+                      <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-500" />{hotel.location}</span>
+                    </TableCell>
+                    <TableCell className="text-right pr-6">
+                      <div className="flex items-center justify-end gap-2">
+                        <Dialog open={editingHotel?._id === hotel._id} onOpenChange={(open) => { if (!open) { setEditingHotel(null); resetForm(); } }}>
+                          <DialogTrigger asChild>
+                            <Button size="icon" variant="ghost" onClick={() => openEdit(hotel)}
+                              className="w-8 h-8 rounded-lg text-gray-400 hover:text-violet-400 hover:bg-violet-400/10">
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+                            <DialogHeader>
+                              <DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500 flex items-center gap-2">
+                                <Pencil className="w-5 h-5 text-violet-400" /> Edit Hotel
+                              </DialogTitle>
+                            </DialogHeader>
+                            <HotelForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Hotel" formData={formData} setFormData={setFormData} />
+                          </DialogContent>
+                        </Dialog>
+                        <Button size="icon" variant="ghost" onClick={() => handleDelete(hotel._id)} disabled={deletingId === hotel._id}
+                          className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10">
+                          {deletingId === hotel._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filtered.map((hotel) => (
-                    <TableRow key={hotel._id} className="border-slate-800 hover:bg-slate-800/50 transition-colors">
-                      <TableCell className="font-medium text-white">{hotel.name}</TableCell>
-                      <TableCell className="text-slate-300">{hotel.roomType}</TableCell>
-                      <TableCell className="text-emerald-400 font-semibold">
-                        <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />{hotel.price}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center gap-1 text-amber-400">
-                          <Star className="w-3.5 h-3.5 fill-amber-400" />{hotel.rating}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-slate-300">
-                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-slate-500" />{hotel.location}</span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Dialog open={editingHotel?._id === hotel._id} onOpenChange={(open) => { if (!open) { setEditingHotel(null); resetForm(); } }}>
-                            <DialogTrigger asChild>
-                              <Button size="sm" variant="ghost" onClick={() => openEdit(hotel)}
-                                className="text-slate-400 hover:text-violet-400 hover:bg-violet-400/10">
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
-                              <DialogHeader>
-                                <DialogTitle className="text-white flex items-center gap-2"><Pencil className="w-5 h-5 text-violet-400" /> Edit Hotel</DialogTitle>
-                              </DialogHeader>
-                              <HotelForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Hotel" formData={formData} setFormData={setFormData} />
-                            </DialogContent>
-                          </Dialog>
-                          <Button size="sm" variant="ghost" onClick={() => handleDelete(hotel._id)} disabled={deletingId === hotel._id}
-                            className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">
-                            {deletingId === hotel._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </PageWrapper>
   );

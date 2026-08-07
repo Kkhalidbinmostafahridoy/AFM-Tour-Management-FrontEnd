@@ -1,5 +1,6 @@
 import AddDivision from "@/pages/admin/AddDivision";
 import { AddTour } from "@/pages/admin/AddTour";
+import ManageTours from "@/pages/admin/ManageTours";
 import { AddTourType } from "@/pages/admin/AddTourType";
 import type { ISidebarItem } from "@/types/index.type";
 import { lazy } from "react";
@@ -15,6 +16,7 @@ const ManageFAQs = lazy(() => import("@/pages/admin/ManageFAQs"));
 const ManageNewsletter = lazy(() => import("@/pages/admin/ManageNewsletter"));
 const ManageDestinations = lazy(() => import("@/pages/admin/ManageDestinations"));
 const ManageBookings = lazy(() => import("@/pages/admin/ManageBookings"));
+const ManageUsers = lazy(() => import("@/pages/admin/ManageUsers"));
 
 export const adminSideBarItems: ISidebarItem[] = [
   {
@@ -52,6 +54,11 @@ export const adminSideBarItems: ISidebarItem[] = [
       },
       {
         title: "All Tours",
+        url: "/admin/tours",
+        component: ManageTours,
+      },
+      {
+        title: "Add Tour",
         url: "/admin/add-tour",
         component: AddTour,
       },
@@ -119,6 +126,11 @@ export const adminSideBarItems: ISidebarItem[] = [
         title: "Manage Guides",
         url: "/admin/guides",
         component: ManageGuides,
+      },
+      {
+        title: "Manage Users",
+        url: "/admin/users",
+        component: ManageUsers,
       },
     ],
   },

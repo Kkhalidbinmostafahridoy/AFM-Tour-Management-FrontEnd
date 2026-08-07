@@ -28,4 +28,5 @@ export interface ITourPackage {
   minAge: number;
   price?: number;
   difficulty?: string;
+  status?: "PUBLISHED" | "DRAFT" | "ARCHIVED";
 }

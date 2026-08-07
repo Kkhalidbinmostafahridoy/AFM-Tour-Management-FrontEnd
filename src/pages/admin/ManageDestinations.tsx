@@ -116,45 +116,82 @@ export default function ManageDestinations() {
 
 
   return (
-    <PageWrapper>
-      <div className="min-h-screen bg-slate-950 p-6">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg"><MapPin className="w-5 h-5 text-white" /></div>
-            <div><h1 className="text-2xl font-bold text-white">Manage Destinations</h1><p className="text-slate-400 text-sm">{destinations.length} destinations</p></div>
+    <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 flex items-center justify-center shadow-inner">
+            <MapPin className="w-8 h-8" />
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild><Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2"><Plus className="w-4 h-4" /> Add Destination</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} /></DialogContent>
-          </Dialog>
-        </motion.div>
+          <div>
+            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">Manage Destinations</h1>
+            <p className="text-[#9ca3af] mt-1 text-sm">{destinations.length} destinations in the system</p>
+          </div>
+        </div>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold h-12 px-6 shadow-lg shadow-emerald-500/20 gap-2">
+              <Plus className="w-5 h-5" /> Add Destination
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+            <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">Add Destination</DialogTitle></DialogHeader>
+            <DestForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        <div className="relative mb-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" /><Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm" placeholder="Search destinations..." /></div>
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+          className="h-11 bg-[#222222] border-[#2a2a2a] text-white pl-10 focus-visible:ring-emerald-500 shadow-lg"
+          placeholder="Search destinations..." />
+      </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-          {destLoading ? <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-green-400" /></div> : (
-            <Table>
-              <TableHeader><TableRow className="border-slate-800 hover:bg-transparent"><TableHead className="text-slate-400">Destination Name</TableHead><TableHead className="text-slate-400">District</TableHead><TableHead className="text-slate-400 text-right">Actions</TableHead></TableRow></TableHeader>
-              <TableBody>
-                {filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={3} className="text-center text-slate-500 py-12">{searchTerm ? "No destinations match" : "No destinations yet."}</TableCell></TableRow>
-                ) : filtered.map((item) => (
-                  <TableRow key={item._id} className="border-slate-800 hover:bg-slate-800/50">
-                    <TableCell className="font-medium text-white flex items-center gap-2"><MapPin className="w-4 h-4 text-green-400" />{item.name}</TableCell>
-                    <TableCell className="text-slate-400">{item.district?.name || "—"}</TableCell>
-                    <TableCell className="text-right"><div className="flex items-center justify-end gap-2">
+      {/* Table */}
+      <div className="rounded-3xl border border-[#2a2a2a] bg-[#222222] shadow-2xl glass-panel overflow-hidden" data-cursor="card">
+        {destLoading ? (
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-emerald-400" /></div>
+        ) : (
+          <Table>
+            <TableHeader className="bg-[#1a1a1a]">
+              <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 pl-6">Destination Name</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4">District</TableHead>
+                <TableHead className="text-gray-400 font-bold uppercase text-[10px] tracking-wider py-4 text-right pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow><TableCell colSpan={3} className="text-center text-gray-500 py-12">{searchTerm ? "No destinations match" : "No destinations yet."}</TableCell></TableRow>
+              ) : filtered.map((item) => (
+                <TableRow key={item._id} className="border-[#2a2a2a] hover:bg-[#2a2a2a]/50 transition-colors">
+                  <TableCell className="font-bold text-white pl-6">
+                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-emerald-400 shrink-0" />{item.name}</span>
+                  </TableCell>
+                  <TableCell className="text-gray-400 font-medium">{item.district?.name || "—"}</TableCell>
+                  <TableCell className="text-right pr-6">
+                    <div className="flex items-center justify-end gap-2">
                       <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
-                        <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="text-slate-400 hover:text-green-400 hover:bg-green-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit Destination</DialogTitle></DialogHeader><DestForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} /></DialogContent>
+                        <DialogTrigger asChild>
+                          <Button size="icon" variant="ghost" onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg text-gray-400 hover:text-emerald-400 hover:bg-emerald-400/10"><Pencil className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+                          <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">Edit Destination</DialogTitle></DialogHeader>
+                          <DestForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update Destination" formData={formData} setFormData={setFormData} divisions={divisions as any} divLoading={divLoading} />
+                        </DialogContent>
                       </Dialog>
-                      <Button size="sm" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
-                    </div></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+                      <Button size="icon" variant="ghost" onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10">
+                        {deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </PageWrapper>
   );

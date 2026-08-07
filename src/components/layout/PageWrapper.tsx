@@ -23,3 +23,5 @@ export function PageWrapper({ children, className = "" }: PageWrapperProps) {
     </motion.div>
   );
 }
+
+export default PageWrapper;

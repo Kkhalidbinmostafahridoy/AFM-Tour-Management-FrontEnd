@@ -112,45 +112,79 @@ export default function ManageFAQs() {
 
 
   return (
-    <PageWrapper>
-      <div className="min-h-screen bg-slate-950 p-6">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg"><HelpCircle className="w-5 h-5 text-white" /></div>
-            <div><h1 className="text-2xl font-bold text-white">Manage FAQs</h1><p className="text-slate-400 text-sm">{items.length} frequently asked questions</p></div>
+    <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-500 flex items-center justify-center shadow-inner">
+            <HelpCircle className="w-8 h-8" />
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild><Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white gap-2"><Plus className="w-4 h-4" /> Add FAQ</Button></DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Add FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create FAQ" formData={formData} setFormData={setFormData} /></DialogContent>
-          </Dialog>
-        </motion.div>
-        <div className="relative mb-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" /><Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 w-full max-w-sm" placeholder="Search questions..." /></div>
-
-        {isLoading ? <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-purple-400" /></div> : (
-          <div className="space-y-3">
-            {filtered.length === 0 ? (
-              <div className="text-center text-slate-500 py-20 bg-slate-900/80 border border-slate-800 rounded-2xl">{searchTerm ? "No FAQs match your search" : "No FAQs yet. Add the first one!"}</div>
-            ) : filtered.map((item) => (
-              <motion.div key={item._id} layout className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-                <div className="flex items-start justify-between p-5 cursor-pointer" onClick={() => setExpandedId(expandedId === item._id ? null : item._id)}>
-                  <div className="flex-1">
-                    <p className="font-medium text-white">{item.question}</p>
-                    {expandedId === item._id && <p className="mt-3 text-slate-400 text-sm leading-relaxed">{item.answer}</p>}
-                  </div>
-                  <div className="flex items-center gap-2 ml-4 shrink-0">
-                    <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
-                      <DialogTrigger asChild><Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); openEdit(item); }} className="text-slate-400 hover:text-purple-400 hover:bg-purple-400/10"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-                      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg"><DialogHeader><DialogTitle className="text-white">Edit FAQ</DialogTitle></DialogHeader><FAQForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update FAQ" formData={formData} setFormData={setFormData} /></DialogContent>
-                    </Dialog>
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }} disabled={deletingId === item._id} className="text-slate-400 hover:text-red-400 hover:bg-red-400/10">{deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</Button>
-                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${expandedId === item._id ? "rotate-180" : ""}`} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div>
+            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Manage FAQs</h1>
+            <p className="text-[#9ca3af] mt-1 text-sm">{items.length} frequently asked questions</p>
           </div>
-        )}
+        </div>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold h-12 px-6 shadow-lg shadow-purple-500/20 gap-2">
+              <Plus className="w-5 h-5" /> Add FAQ
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+            <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Add FAQ</DialogTitle></DialogHeader>
+            <FAQForm onSubmit={handleCreate} isSubmitting={isCreating} title="Create FAQ" formData={formData} setFormData={setFormData} />
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+          className="h-11 bg-[#222222] border-[#2a2a2a] text-white pl-10 focus-visible:ring-purple-500 shadow-lg"
+          placeholder="Search questions..." />
+      </div>
+
+      {/* FAQ Accordion Cards */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-purple-400" /></div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.length === 0 ? (
+            <div className="text-center text-gray-500 py-20 bg-[#222222] border border-[#2a2a2a] rounded-3xl glass-panel">
+              {searchTerm ? "No FAQs match your search" : "No FAQs yet. Add the first one!"}
+            </div>
+          ) : filtered.map((item) => (
+            <div key={item._id} className="bg-[#222222] border border-[#2a2a2a] rounded-2xl overflow-hidden glass-panel hover:border-purple-500/20 transition-all" data-cursor="card">
+              <div className="flex items-start justify-between p-5 cursor-pointer group" onClick={() => setExpandedId(expandedId === item._id ? null : item._id)}>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-white group-hover:text-purple-300 transition-colors leading-snug">{item.question}</p>
+                  {expandedId === item._id && (
+                    <p className="mt-3 text-gray-400 text-sm leading-relaxed border-t border-[#333] pt-3">{item.answer}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 ml-4 shrink-0">
+                  <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => { if (!open) { setEditingItem(null); resetForm(); } }}>
+                    <DialogTrigger asChild>
+                      <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); openEdit(item); }} className="w-8 h-8 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-400/10">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#222222] border-[#3a3a3a] text-white max-w-lg glass-panel">
+                      <DialogHeader><DialogTitle className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Edit FAQ</DialogTitle></DialogHeader>
+                      <FAQForm onSubmit={handleUpdate} isSubmitting={isUpdating} title="Update FAQ" formData={formData} setFormData={setFormData} />
+                    </DialogContent>
+                  </Dialog>
+                  <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }} disabled={deletingId === item._id} className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10">
+                    {deletingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                  </Button>
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${expandedId === item._id ? "rotate-180 text-purple-400" : ""}`} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </PageWrapper>
   );
 }
