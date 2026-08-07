@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,7 +15,7 @@ import {
   CheckCircle2,
   AlertCircle,
   EyeOff,
-  MoreVertical
+  MoreVertical,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -32,7 +34,11 @@ export default function ManageTours() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const { data: rawData, isLoading, refetch } = useGetAllTourQuery(undefined, {
+  const {
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useGetAllTourQuery(undefined, {
     refetchOnFocus: true,
   });
 
@@ -41,17 +47,19 @@ export default function ManageTours() {
 
   const tours = useMemo(() => {
     if (Array.isArray(rawData)) return rawData;
-    return rawData?.data || [];
+    return (rawData as any)?.data || [];
   }, [rawData]);
 
   const filteredTours = useMemo(() => {
     let result = tours;
     if (statusFilter !== "ALL") {
-      result = result.filter((t: any) => (t.status || "PUBLISHED") === statusFilter);
+      result = result.filter(
+        (t: any) => (t.status || "PUBLISHED") === statusFilter,
+      );
     }
     if (searchTerm.trim()) {
       result = result.filter((t: any) =>
-        t.title.toLowerCase().includes(searchTerm.toLowerCase())
+        t.title.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
     return result;
@@ -86,7 +94,10 @@ export default function ManageTours() {
   return (
     <PageWrapper className="space-y-8 bg-[#1a1a1a] min-h-screen p-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt" data-cursor="card">
+      <div
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-3xl bg-[#222222] border border-[#2a2a2a] shadow-2xl glass-panel hover-3d-tilt"
+        data-cursor="card"
+      >
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-[#3b82f6]/10 border border-[#3b82f6]/30 text-[#3b82f6] flex items-center justify-center shadow-inner">
             <Compass className="w-8 h-8 animate-spin-slow" />
@@ -95,7 +106,9 @@ export default function ManageTours() {
             <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
               Tour Management
             </h1>
-            <p className="text-[#9ca3af] mt-1 text-sm">Create, Edit, Publish, Draft, or Archive tours.</p>
+            <p className="text-[#9ca3af] mt-1 text-sm">
+              Create, Edit, Publish, Draft, or Archive tours.
+            </p>
           </div>
         </div>
         <Link to="/admin/add-tour">
@@ -137,14 +150,19 @@ export default function ManageTours() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-80 bg-[#222222] rounded-3xl animate-pulse border border-[#2a2a2a]" />
+            <div
+              key={i}
+              className="h-80 bg-[#222222] rounded-3xl animate-pulse border border-[#2a2a2a]"
+            />
           ))}
         </div>
       ) : filteredTours.length === 0 ? (
         <div className="bg-[#222222] border border-[#2a2a2a] rounded-3xl p-12 text-center shadow-2xl glass-panel">
           <Compass className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-white mb-2">No Tours Found</h3>
-          <p className="text-gray-400">Try adjusting your search or filters, or create a new tour.</p>
+          <p className="text-gray-400">
+            Try adjusting your search or filters, or create a new tour.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -173,18 +191,28 @@ export default function ManageTours() {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent" />
-                  
+
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 shadow-lg backdrop-blur-md ${
-                      (tour.status || 'PUBLISHED') === 'PUBLISHED' ? 'bg-emerald-500/80 text-white' :
-                      (tour.status || 'PUBLISHED') === 'DRAFT' ? 'bg-amber-500/80 text-white' :
-                      'bg-gray-500/80 text-white'
-                    }`}>
-                      {(tour.status || 'PUBLISHED') === 'PUBLISHED' && <CheckCircle2 className="w-3 h-3" />}
-                      {(tour.status || 'PUBLISHED') === 'DRAFT' && <AlertCircle className="w-3 h-3" />}
-                      {(tour.status || 'PUBLISHED') === 'ARCHIVED' && <EyeOff className="w-3 h-3" />}
-                      {tour.status || 'PUBLISHED'}
+                    <span
+                      className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1.5 shadow-lg backdrop-blur-md ${
+                        (tour.status || "PUBLISHED") === "PUBLISHED"
+                          ? "bg-emerald-500/80 text-white"
+                          : (tour.status || "PUBLISHED") === "DRAFT"
+                            ? "bg-amber-500/80 text-white"
+                            : "bg-gray-500/80 text-white"
+                      }`}
+                    >
+                      {(tour.status || "PUBLISHED") === "PUBLISHED" && (
+                        <CheckCircle2 className="w-3 h-3" />
+                      )}
+                      {(tour.status || "PUBLISHED") === "DRAFT" && (
+                        <AlertCircle className="w-3 h-3" />
+                      )}
+                      {(tour.status || "PUBLISHED") === "ARCHIVED" && (
+                        <EyeOff className="w-3 h-3" />
+                      )}
+                      {tour.status || "PUBLISHED"}
                     </span>
                   </div>
                 </div>
@@ -194,11 +222,13 @@ export default function ManageTours() {
                   <h3 className="text-lg font-bold text-white mb-2 line-clamp-1 group-hover:text-blue-400 transition-colors">
                     {tour.title}
                   </h3>
-                  
+
                   <div className="space-y-2 mt-2">
                     <div className="flex items-center gap-2 text-xs text-gray-400">
                       <MapPin className="w-3.5 h-3.5 text-blue-500" />
-                      <span className="truncate">{tour.location || 'Location TBD'}</span>
+                      <span className="truncate">
+                        {tour.location || "Location TBD"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-400">
                       <CalendarIcon className="w-3.5 h-3.5 text-blue-500" />
@@ -213,12 +243,14 @@ export default function ManageTours() {
                     <div className="flex items-center gap-2">
                       {/* Status Toggle */}
                       {updatingId === tour._id ? (
-                         <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                       ) : (
                         <select
                           className="bg-[#1a1a1a] text-[10px] text-gray-300 font-bold uppercase tracking-wider border border-[#333333] rounded-lg px-2 py-1.5 outline-none focus:border-blue-500 cursor-pointer"
-                          value={tour.status || 'PUBLISHED'}
-                          onChange={(e) => handleStatusUpdate(tour._id, e.target.value)}
+                          value={tour.status || "PUBLISHED"}
+                          onChange={(e) =>
+                            handleStatusUpdate(tour._id, e.target.value)
+                          }
                         >
                           <option value="PUBLISHED">Publish</option>
                           <option value="DRAFT">Draft</option>
@@ -227,13 +259,28 @@ export default function ManageTours() {
                       )}
 
                       <Link to={`/admin/edit-tour/${tour._id}`}>
-                        <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-8 h-8 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+                        >
                           <Pencil className="w-4 h-4" />
                         </Button>
                       </Link>
-                      <DeleteConfirmation onConfirm={() => handleDelete(tour._id)}>
-                        <Button variant="ghost" size="icon" disabled={deletingId === tour._id} className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10">
-                          {deletingId === tour._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      <DeleteConfirmation
+                        onConfirm={() => handleDelete(tour._id)}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={deletingId === tour._id}
+                          className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                        >
+                          {deletingId === tour._id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
                         </Button>
                       </DeleteConfirmation>
                     </div>
