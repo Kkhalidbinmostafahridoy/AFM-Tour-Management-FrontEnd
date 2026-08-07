@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api/v1/:match*",
-      "destination": "https://backend-ph-tour-management-system.vercel.app/api/v1/:match*"
+      "source": "/api/v1/:path*",
+      "destination": "https://backend-ph-tour-management-system-lake.vercel.app/api/v1/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/v1).*)",
       "destination": "/index.html"
     }
   ]

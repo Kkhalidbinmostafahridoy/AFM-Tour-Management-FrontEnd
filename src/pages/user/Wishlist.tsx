@@ -1,17 +1,155 @@
-import { useGetWishlistQuery, useToggleWishlistMutation } from "@/redux/features/wishlist/wishlist.api";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  useGetWishlistQuery,
+  useToggleWishlistMutation,
+} from "@/redux/features/wishlist/wishlist.api";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { Heart, MapPin, Search, Trash2, Map } from "lucide-react";
+import React from "react";
+
+// 3D Card Component for Wishlist
+const WishlistCard3D = ({
+  tour,
+  handleRemove,
+  index,
+}: {
+  tour: any;
+  handleRemove: (id: string) => void;
+  index: number;
+}) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <div className="perspective-1000" style={{ perspective: "1200px" }}>
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+        transition={{ delay: index * 0.05, type: "spring", bounce: 0.4 }}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        whileHover={{ scale: 1.05, zIndex: 10 }}
+        className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] border-y border-white border-x border-slate-100/60 overflow-hidden group transition-all duration-300 flex flex-col relative"
+      >
+        {/* Glowing 3D backdrop */}
+        <div className="absolute inset-0 bg-rose-500/0 rounded-[2rem] -z-10 blur-xl group-hover:bg-rose-500/20 group-hover:blur-2xl transition-all duration-500 transform translate-y-4 translate-z-[-20px]"></div>
+
+        <div
+          className="h-64 relative overflow-hidden rounded-t-[2rem] border-b border-slate-100"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          <img
+            src={tour.images?.[0] || "/placeholder-tour.jpg"}
+            alt={tour.title}
+            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
+
+          {/* Remove Button with Depth */}
+          <button
+            onClick={() => handleRemove(tour._id)}
+            className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center text-white hover:bg-rose-600 hover:text-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 -translate-y-4 group-hover:translate-y-0 shadow-lg border border-white/30"
+            title="Remove from wishlist"
+            style={{ transform: "translateZ(50px)" }}
+          >
+            <Trash2 className="w-6 h-6 drop-shadow-md" />
+          </button>
+
+          <div
+            className="absolute bottom-5 left-6 right-6"
+            style={{ transform: "translateZ(40px)" }}
+          >
+            <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-xl mb-3 inline-flex items-center gap-1.5 border border-white/30 shadow-md">
+              <Map className="w-3 h-3" /> {tour.tourType}
+            </span>
+            <h3 className="text-2xl font-black text-white line-clamp-2 leading-tight drop-shadow-xl">
+              {tour.title}
+            </h3>
+          </div>
+        </div>
+
+        <div
+          className="p-6 flex flex-col flex-1 bg-white"
+          style={{ transform: "translateZ(20px)" }}
+        >
+          <div className="flex justify-between items-end mb-8 text-sm flex-1">
+            <div className="flex items-center gap-2 text-slate-500 font-medium max-w-[55%] bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 shadow-inner">
+              <MapPin className="w-5 h-5 text-rose-500 shrink-0 drop-shadow-sm" />
+              <span className="truncate">{tour.location}</span>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                From
+              </p>
+              <span className="text-2xl font-black bg-gradient-to-br from-rose-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+                ৳{tour.costFrom}
+              </span>
+            </div>
+          </div>
+          <Button
+            asChild
+            className="w-full rounded-2xl h-14 shadow-[0_10px_20px_rgba(225,29,72,0.2)] bg-gradient-to-r from-slate-900 to-slate-800 hover:from-rose-600 hover:to-pink-600 text-white font-bold transition-all duration-300 transform group-hover:-translate-y-1 group-hover:shadow-[0_15px_30px_rgba(225,29,72,0.4)] border border-slate-700 hover:border-rose-500 text-base"
+            style={{ transform: "translateZ(10px)" }}
+          >
+            <Link to={`/tours/${tour._id}`}>Explore Tour Details</Link>
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 function Wishlist() {
-  const { data: wishlistData, isLoading, isError } = useGetWishlistQuery(undefined);
+  const {
+    data: wishlistData,
+    isLoading,
+    isError,
+  } = useGetWishlistQuery(undefined);
   const [toggleWishlist] = useToggleWishlistMutation();
 
   const handleRemove = async (tourId: string) => {
     try {
       await toggleWishlist(tourId).unwrap();
-      toast.success("Removed from wishlist");
+      toast.success("Removed from wishlist", {
+        icon: <Heart className="text-rose-500 w-4 h-4 fill-rose-500" />,
+        className: "bg-white border border-rose-100 text-slate-800",
+      });
     } catch (error) {
       toast.error("Failed to remove from wishlist");
     }
@@ -19,86 +157,98 @@ function Wishlist() {
 
   if (isLoading) {
     return (
-      <div className="p-8 flex justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="relative w-24 h-24" style={{ perspective: "500px" }}>
+          <motion.div
+            animate={{ rotateX: 360, rotateY: 360 }}
+            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+            className="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl mx-auto shadow-2xl shadow-rose-500/50"
+          ></motion.div>
+        </div>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="p-8 text-center text-red-500 bg-red-50 rounded-2xl">
-        Failed to load your wishlist. Please try again later.
+      <div className="p-8 max-w-2xl mx-auto mt-10 text-center text-red-600 bg-red-50/50 backdrop-blur-sm rounded-3xl border border-red-100 py-12 shadow-[0_20px_50px_rgba(255,0,0,0.1)]">
+        <h3 className="text-2xl font-bold mb-2">Oops! Something went wrong</h3>
+        <p className="text-red-500/80 text-lg">
+          Failed to load your wishlist. Please try again later.
+        </p>
       </div>
     );
   }
 
-  // Find the user's wishlist document
-  // The API might return an array of wishlists if it's generic, but we expect the query to return just ours
-  const myWishlist = Array.isArray(wishlistData) ? wishlistData[0] : wishlistData;
+  const myWishlist = Array.isArray(wishlistData)
+    ? wishlistData[0]
+    : wishlistData;
   const savedTours = myWishlist?.tours || [];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Wishlist ❤️</h1>
-      </div>
+    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen relative">
+      {/* 3D Background Decorative Elements */}
+      <div className="absolute top-0 right-20 w-72 h-72 bg-rose-400/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+      <div className="absolute bottom-20 left-0 w-96 h-96 bg-pink-400/10 rounded-full blur-[150px] -z-10 pointer-events-none"></div>
+
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-5 mb-14"
+      >
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center shadow-[0_10px_30px_rgba(225,29,72,0.4)] border border-rose-400 transform rotate-[-5deg] hover:rotate-0 transition-transform duration-300">
+          <Heart className="w-8 h-8 fill-white drop-shadow-md" />
+        </div>
+        <div>
+          <h1 className="text-4xl font-black bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-transparent tracking-tight">
+            My Wishlist
+          </h1>
+          <p className="text-slate-500 font-medium text-lg mt-1 tracking-wide">
+            Your curated collection of dream destinations
+          </p>
+        </div>
+      </motion.div>
 
       {savedTours.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
-          <div className="text-6xl mb-4">🏜️</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
-          <p className="text-gray-500 mb-6">Save tours you love so you don't lose sight of them.</p>
-          <Button asChild className="rounded-full px-8 bg-red-600 hover:bg-red-700">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
+          animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+          transition={{ type: "spring", bounce: 0.5 }}
+          className="bg-white/80 backdrop-blur-2xl rounded-[3rem] p-20 text-center shadow-[0_30px_60px_rgba(0,0,0,0.05)] border-y border-white border-x border-slate-100 max-w-3xl mx-auto"
+          style={{ perspective: "1000px" }}
+        >
+          <motion.div
+            animate={{ y: [0, -15, 0], rotateY: [0, 10, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            className="w-32 h-32 bg-gradient-to-tr from-rose-100 to-pink-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner border border-white relative"
+          >
+            <Heart className="w-16 h-16 text-rose-300 absolute fill-rose-200" />
+            <Search className="w-16 h-16 text-rose-500 absolute translate-x-4 translate-y-4 drop-shadow-lg" />
+          </motion.div>
+          <h3 className="text-3xl font-extrabold text-slate-800 mb-4 tracking-tight">
+            Your wishlist is empty
+          </h3>
+          <p className="text-slate-500 text-xl mb-10 max-w-lg mx-auto leading-relaxed">
+            Discover incredible destinations and save them here so you never
+            lose sight of your next adventure.
+          </p>
+          <Button
+            asChild
+            className="rounded-2xl px-12 h-14 text-lg font-bold bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 shadow-[0_10px_30px_rgba(225,29,72,0.3)] transition-all hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(225,29,72,0.5)] border border-rose-500"
+          >
             <Link to="/tours">Explore Tours</Link>
           </Button>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           <AnimatePresence>
-            {savedTours.map((tour: any) => (
-              <motion.div
+            {savedTours.map((tour: any, index: number) => (
+              <WishlistCard3D
                 key={tour._id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden group relative"
-              >
-                <div className="h-48 relative overflow-hidden">
-                  <img
-                    src={tour.images?.[0] || "/placeholder-tour.jpg"}
-                    alt={tour.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  
-                  {/* Remove Button */}
-                  <button
-                    onClick={() => handleRemove(tour._id)}
-                    className="absolute top-4 right-4 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors z-10 shadow-sm"
-                  >
-                    ✕
-                  </button>
-                  
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <span className="px-2 py-1 bg-white/20 backdrop-blur text-white text-xs font-semibold rounded-md mb-2 inline-block">
-                      {tour.tourType}
-                    </span>
-                    <h3 className="text-lg font-bold text-white line-clamp-1">{tour.title}</h3>
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex justify-between items-center mb-4 text-sm text-gray-600">
-                    <span>📍 {tour.location}</span>
-                    <span className="font-bold text-blue-600">৳{tour.costFrom}</span>
-                  </div>
-                  <Button asChild className="w-full rounded-full shadow-md bg-blue-600 hover:bg-blue-700">
-                    <Link to={`/tours/${tour._id}`}>View Details</Link>
-                  </Button>
-                </div>
-              </motion.div>
+                tour={tour}
+                handleRemove={handleRemove}
+                index={index}
+              />
             ))}
           </AnimatePresence>
         </div>
